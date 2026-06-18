@@ -9,38 +9,411 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TentangRouteImport } from './routes/tentang'
+import { Route as SyaratRouteImport } from './routes/syarat'
+import { Route as SingleOriginRouteImport } from './routes/single-origin'
+import { Route as ShopRouteImport } from './routes/shop'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as KontakRouteImport } from './routes/kontak'
+import { Route as KomunitasRouteImport } from './routes/komunitas'
+import { Route as KeranjangRouteImport } from './routes/keranjang'
+import { Route as KebijakanPrivasiRouteImport } from './routes/kebijakan-privasi'
+import { Route as CustomRouteImport } from './routes/custom'
+import { Route as BlogRouteImport } from './routes/blog'
+import { Route as BlendRouteImport } from './routes/blend'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AccessoriesRouteImport } from './routes/accessories'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AuthenticatedAkunRouteImport } from './routes/_authenticated/akun'
+import { Route as AuthenticatedAkunWishlistRouteImport } from './routes/_authenticated/akun.wishlist'
+import { Route as AuthenticatedAkunReviewRouteImport } from './routes/_authenticated/akun.review'
+import { Route as AuthenticatedAkunPesananRouteImport } from './routes/_authenticated/akun.pesanan'
+import { Route as AuthenticatedAkunAlamatRouteImport } from './routes/_authenticated/akun.alamat'
 
+const TentangRoute = TentangRouteImport.update({
+  id: '/tentang',
+  path: '/tentang',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SyaratRoute = SyaratRouteImport.update({
+  id: '/syarat',
+  path: '/syarat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SingleOriginRoute = SingleOriginRouteImport.update({
+  id: '/single-origin',
+  path: '/single-origin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KontakRoute = KontakRouteImport.update({
+  id: '/kontak',
+  path: '/kontak',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KomunitasRoute = KomunitasRouteImport.update({
+  id: '/komunitas',
+  path: '/komunitas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KeranjangRoute = KeranjangRouteImport.update({
+  id: '/keranjang',
+  path: '/keranjang',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KebijakanPrivasiRoute = KebijakanPrivasiRouteImport.update({
+  id: '/kebijakan-privasi',
+  path: '/kebijakan-privasi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomRoute = CustomRouteImport.update({
+  id: '/custom',
+  path: '/custom',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlendRoute = BlendRouteImport.update({
+  id: '/blend',
+  path: '/blend',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessoriesRoute = AccessoriesRouteImport.update({
+  id: '/accessories',
+  path: '/accessories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
+} as any)
+const AuthenticatedAkunRoute = AuthenticatedAkunRouteImport.update({
+  id: '/akun',
+  path: '/akun',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAkunWishlistRoute =
+  AuthenticatedAkunWishlistRouteImport.update({
+    id: '/wishlist',
+    path: '/wishlist',
+    getParentRoute: () => AuthenticatedAkunRoute,
+  } as any)
+const AuthenticatedAkunReviewRoute = AuthenticatedAkunReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => AuthenticatedAkunRoute,
+} as any)
+const AuthenticatedAkunPesananRoute =
+  AuthenticatedAkunPesananRouteImport.update({
+    id: '/pesanan',
+    path: '/pesanan',
+    getParentRoute: () => AuthenticatedAkunRoute,
+  } as any)
+const AuthenticatedAkunAlamatRoute = AuthenticatedAkunAlamatRouteImport.update({
+  id: '/alamat',
+  path: '/alamat',
+  getParentRoute: () => AuthenticatedAkunRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accessories': typeof AccessoriesRoute
+  '/auth': typeof AuthRoute
+  '/blend': typeof BlendRoute
+  '/blog': typeof BlogRouteWithChildren
+  '/custom': typeof CustomRoute
+  '/kebijakan-privasi': typeof KebijakanPrivasiRoute
+  '/keranjang': typeof KeranjangRoute
+  '/komunitas': typeof KomunitasRoute
+  '/kontak': typeof KontakRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/shop': typeof ShopRoute
+  '/single-origin': typeof SingleOriginRoute
+  '/syarat': typeof SyaratRoute
+  '/tentang': typeof TentangRoute
+  '/akun': typeof AuthenticatedAkunRouteWithChildren
+  '/blog/$slug': typeof BlogSlugRoute
+  '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
+  '/akun/pesanan': typeof AuthenticatedAkunPesananRoute
+  '/akun/review': typeof AuthenticatedAkunReviewRoute
+  '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accessories': typeof AccessoriesRoute
+  '/auth': typeof AuthRoute
+  '/blend': typeof BlendRoute
+  '/blog': typeof BlogRouteWithChildren
+  '/custom': typeof CustomRoute
+  '/kebijakan-privasi': typeof KebijakanPrivasiRoute
+  '/keranjang': typeof KeranjangRoute
+  '/komunitas': typeof KomunitasRoute
+  '/kontak': typeof KontakRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/shop': typeof ShopRoute
+  '/single-origin': typeof SingleOriginRoute
+  '/syarat': typeof SyaratRoute
+  '/tentang': typeof TentangRoute
+  '/akun': typeof AuthenticatedAkunRouteWithChildren
+  '/blog/$slug': typeof BlogSlugRoute
+  '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
+  '/akun/pesanan': typeof AuthenticatedAkunPesananRoute
+  '/akun/review': typeof AuthenticatedAkunReviewRoute
+  '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/accessories': typeof AccessoriesRoute
+  '/auth': typeof AuthRoute
+  '/blend': typeof BlendRoute
+  '/blog': typeof BlogRouteWithChildren
+  '/custom': typeof CustomRoute
+  '/kebijakan-privasi': typeof KebijakanPrivasiRoute
+  '/keranjang': typeof KeranjangRoute
+  '/komunitas': typeof KomunitasRoute
+  '/kontak': typeof KontakRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/shop': typeof ShopRoute
+  '/single-origin': typeof SingleOriginRoute
+  '/syarat': typeof SyaratRoute
+  '/tentang': typeof TentangRoute
+  '/_authenticated/akun': typeof AuthenticatedAkunRouteWithChildren
+  '/blog/$slug': typeof BlogSlugRoute
+  '/_authenticated/akun/alamat': typeof AuthenticatedAkunAlamatRoute
+  '/_authenticated/akun/pesanan': typeof AuthenticatedAkunPesananRoute
+  '/_authenticated/akun/review': typeof AuthenticatedAkunReviewRoute
+  '/_authenticated/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/accessories'
+    | '/auth'
+    | '/blend'
+    | '/blog'
+    | '/custom'
+    | '/kebijakan-privasi'
+    | '/keranjang'
+    | '/komunitas'
+    | '/kontak'
+    | '/reset-password'
+    | '/shop'
+    | '/single-origin'
+    | '/syarat'
+    | '/tentang'
+    | '/akun'
+    | '/blog/$slug'
+    | '/akun/alamat'
+    | '/akun/pesanan'
+    | '/akun/review'
+    | '/akun/wishlist'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/accessories'
+    | '/auth'
+    | '/blend'
+    | '/blog'
+    | '/custom'
+    | '/kebijakan-privasi'
+    | '/keranjang'
+    | '/komunitas'
+    | '/kontak'
+    | '/reset-password'
+    | '/shop'
+    | '/single-origin'
+    | '/syarat'
+    | '/tentang'
+    | '/akun'
+    | '/blog/$slug'
+    | '/akun/alamat'
+    | '/akun/pesanan'
+    | '/akun/review'
+    | '/akun/wishlist'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/accessories'
+    | '/auth'
+    | '/blend'
+    | '/blog'
+    | '/custom'
+    | '/kebijakan-privasi'
+    | '/keranjang'
+    | '/komunitas'
+    | '/kontak'
+    | '/reset-password'
+    | '/shop'
+    | '/single-origin'
+    | '/syarat'
+    | '/tentang'
+    | '/_authenticated/akun'
+    | '/blog/$slug'
+    | '/_authenticated/akun/alamat'
+    | '/_authenticated/akun/pesanan'
+    | '/_authenticated/akun/review'
+    | '/_authenticated/akun/wishlist'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AccessoriesRoute: typeof AccessoriesRoute
+  AuthRoute: typeof AuthRoute
+  BlendRoute: typeof BlendRoute
+  BlogRoute: typeof BlogRouteWithChildren
+  CustomRoute: typeof CustomRoute
+  KebijakanPrivasiRoute: typeof KebijakanPrivasiRoute
+  KeranjangRoute: typeof KeranjangRoute
+  KomunitasRoute: typeof KomunitasRoute
+  KontakRoute: typeof KontakRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  ShopRoute: typeof ShopRoute
+  SingleOriginRoute: typeof SingleOriginRoute
+  SyaratRoute: typeof SyaratRoute
+  TentangRoute: typeof TentangRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tentang': {
+      id: '/tentang'
+      path: '/tentang'
+      fullPath: '/tentang'
+      preLoaderRoute: typeof TentangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/syarat': {
+      id: '/syarat'
+      path: '/syarat'
+      fullPath: '/syarat'
+      preLoaderRoute: typeof SyaratRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/single-origin': {
+      id: '/single-origin'
+      path: '/single-origin'
+      fullPath: '/single-origin'
+      preLoaderRoute: typeof SingleOriginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kontak': {
+      id: '/kontak'
+      path: '/kontak'
+      fullPath: '/kontak'
+      preLoaderRoute: typeof KontakRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/komunitas': {
+      id: '/komunitas'
+      path: '/komunitas'
+      fullPath: '/komunitas'
+      preLoaderRoute: typeof KomunitasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keranjang': {
+      id: '/keranjang'
+      path: '/keranjang'
+      fullPath: '/keranjang'
+      preLoaderRoute: typeof KeranjangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kebijakan-privasi': {
+      id: '/kebijakan-privasi'
+      path: '/kebijakan-privasi'
+      fullPath: '/kebijakan-privasi'
+      preLoaderRoute: typeof KebijakanPrivasiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/custom': {
+      id: '/custom'
+      path: '/custom'
+      fullPath: '/custom'
+      preLoaderRoute: typeof CustomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blend': {
+      id: '/blend'
+      path: '/blend'
+      fullPath: '/blend'
+      preLoaderRoute: typeof BlendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessories': {
+      id: '/accessories'
+      path: '/accessories'
+      fullPath: '/accessories'
+      preLoaderRoute: typeof AccessoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +421,106 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
+    }
+    '/_authenticated/akun': {
+      id: '/_authenticated/akun'
+      path: '/akun'
+      fullPath: '/akun'
+      preLoaderRoute: typeof AuthenticatedAkunRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/akun/wishlist': {
+      id: '/_authenticated/akun/wishlist'
+      path: '/wishlist'
+      fullPath: '/akun/wishlist'
+      preLoaderRoute: typeof AuthenticatedAkunWishlistRouteImport
+      parentRoute: typeof AuthenticatedAkunRoute
+    }
+    '/_authenticated/akun/review': {
+      id: '/_authenticated/akun/review'
+      path: '/review'
+      fullPath: '/akun/review'
+      preLoaderRoute: typeof AuthenticatedAkunReviewRouteImport
+      parentRoute: typeof AuthenticatedAkunRoute
+    }
+    '/_authenticated/akun/pesanan': {
+      id: '/_authenticated/akun/pesanan'
+      path: '/pesanan'
+      fullPath: '/akun/pesanan'
+      preLoaderRoute: typeof AuthenticatedAkunPesananRouteImport
+      parentRoute: typeof AuthenticatedAkunRoute
+    }
+    '/_authenticated/akun/alamat': {
+      id: '/_authenticated/akun/alamat'
+      path: '/alamat'
+      fullPath: '/akun/alamat'
+      preLoaderRoute: typeof AuthenticatedAkunAlamatRouteImport
+      parentRoute: typeof AuthenticatedAkunRoute
+    }
   }
 }
 
+interface AuthenticatedAkunRouteChildren {
+  AuthenticatedAkunAlamatRoute: typeof AuthenticatedAkunAlamatRoute
+  AuthenticatedAkunPesananRoute: typeof AuthenticatedAkunPesananRoute
+  AuthenticatedAkunReviewRoute: typeof AuthenticatedAkunReviewRoute
+  AuthenticatedAkunWishlistRoute: typeof AuthenticatedAkunWishlistRoute
+}
+
+const AuthenticatedAkunRouteChildren: AuthenticatedAkunRouteChildren = {
+  AuthenticatedAkunAlamatRoute: AuthenticatedAkunAlamatRoute,
+  AuthenticatedAkunPesananRoute: AuthenticatedAkunPesananRoute,
+  AuthenticatedAkunReviewRoute: AuthenticatedAkunReviewRoute,
+  AuthenticatedAkunWishlistRoute: AuthenticatedAkunWishlistRoute,
+}
+
+const AuthenticatedAkunRouteWithChildren =
+  AuthenticatedAkunRoute._addFileChildren(AuthenticatedAkunRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAkunRoute: typeof AuthenticatedAkunRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAkunRoute: AuthenticatedAkunRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AccessoriesRoute: AccessoriesRoute,
+  AuthRoute: AuthRoute,
+  BlendRoute: BlendRoute,
+  BlogRoute: BlogRouteWithChildren,
+  CustomRoute: CustomRoute,
+  KebijakanPrivasiRoute: KebijakanPrivasiRoute,
+  KeranjangRoute: KeranjangRoute,
+  KomunitasRoute: KomunitasRoute,
+  KontakRoute: KontakRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  ShopRoute: ShopRoute,
+  SingleOriginRoute: SingleOriginRoute,
+  SyaratRoute: SyaratRoute,
+  TentangRoute: TentangRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
