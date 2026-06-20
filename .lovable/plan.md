@@ -1,57 +1,54 @@
+# Stage 1 — Public website + customer auth (build-ready)
 
-# Cuma Biji — Full Web App Plan
+Stage 0 sudah live (Cloud, schema lengkap + RLS, design tokens, layout shell, homepage, auth email + Google, akun shell, seed). Stage ini mengisi seluruh permukaan publik dan etalase produk. Tidak menyentuh cart/checkout/admin (itu Stage 2 & 3).
 
-You picked **everything including Phase 2**. That's too large for one turn at production quality. I'll deliver it in **5 staged builds**, each shippable on its own. After each stage you can test, then say "lanjut" to continue.
+## Halaman yang dibangun
 
----
+1. **Shop `/shop`** — grid produk 3–4 kolom, filter sidebar (Origin, Roast Level, Process Method, rentang harga, rating), sort (Terbaru / Terlaris / Harga ↑ / Harga ↓), pagination 12 per halaman, search bar. Data dari `products` + `origins` via public server fn (publishable client, `TO anon` SELECT policy yang sudah ada).
+2. **Product Detail `/produk/$slug`** — galeri foto, nama, harga, stock badge, berat, origin (link), ketinggian, process, roast level, tasting notes chip, aroma/body/acidity bar, blok review + rating rata-rata, produk terkait (origin atau kategori sama). Tombol **Tambah ke Keranjang** & **Wishlist** masih stub toast "tersedia di tahap berikutnya" — slot logic Stage 2.
+3. **Single Origin `/single-origin`** — list 6 origin Nusantara sebagai kartu editorial (peta region kecil pakai ilustrasi, tasting profile, ketinggian, proses umum), tiap kartu link ke `/single-origin/$slug` dengan deskripsi panjang + daftar produk origin tsb.
+4. **Blend `/blend`** — list produk `kind = blend` dengan narasi house blend.
+5. **Custom Coffee Builder `/custom`** — wizard 4 langkah (Origin → Roast → Berat → Grind), progress indicator, preview ringkas + estimasi harga, tombol **Tambah ke Keranjang** stub (Stage 2 akan menulis ke `cart_items` dengan `product_kind = custom`). State lokal via `useReducer`.
+6. **Accessories `/accessories`** — grid kategori aksesoris (V60, Kalita, Moka Pot, French Press, grinder, dsb) dari `products` kind `accessory`.
+7. **Blog `/blog` & `/blog/$slug`** — list dengan kategori (Panduan Seduh, Mengenal Origin, Roasting Guide, Coffee Knowledge), search, artikel detail dengan TOC, related article, share. Konten dari `blogs` + `blog_categories`.
+8. **Tentang `/tentang`** — narasi brand, peta origin, value, tim.
+9. **Kontak `/kontak`** — form (nama, email, pesan) divalidasi Zod, kirim ke server fn `submitContactMessage` yang menyimpan ke `activity_logs` (tipe `contact_message`).
+10. **Auth `/auth` & `/reset-password`** — sudah ada Stage 0, tinggal poles state error (Bahasa Indonesia), inline “Lupa kata sandi?”, validasi Zod.
+11. **Customer Account `_authenticated/akun.*`** — isi shell-nya:
+    - `/akun` — kartu profil, ringkasan order terakhir, loyalty placeholder.
+    - `/akun/profil` — edit `profiles` (nama, no HP, avatar upload ke bucket `avatars`).
+    - `/akun/alamat` — CRUD `addresses` (set default).
+    - `/akun/wishlist` — list dari `wishlist`, hapus.
+    - `/akun/pesanan` — empty state "Belum ada pesanan" (data flow di Stage 2).
+    - `/akun/review` — empty state.
 
-## Stage 0 — Foundation (this turn)
+## Komponen reusable (baru)
 
-- Enable **Lovable Cloud** (auth, Postgres, storage).
-- Set up design system in `src/styles.css`: sage `#A8BBA3`, bg `#FAF8F2`, cream `#F6F1E7`, coffee brown `#4A3728`, beige `#DCC8A3`, text `#2B2B2B`. Editorial typography (display + body via @fontsource), 12-col grid utilities, generous spacing scale.
-- Public layout shell (header, footer, mega-nav) + reusable coffee-bean illustration components (SVG, generated once).
-- Database schema + RLS for ALL entities below (one migration).
-- Auth: email/password + Google, `profiles` table, `user_roles` table with `app_role` enum (`customer`, `admin`) + `has_role()` security-definer function.
-- Storage buckets: `product-images` (public), `payment-proofs` (private), `blog-images` (public), `review-photos` (public), `avatars` (public).
-- Seed: 6 origins (Gayo, Toraja, Kintamani, Java Preanger, Flores Bajawa, Papua), ~12 demo products, 3 blog posts, 2 voucher codes.
+`ProductCard`, `ProductGrid`, `FilterSidebar`, `SortDropdown`, `PriceTag`, `RatingStars`, `TastingNoteChip`, `OriginCard`, `BlogCard`, `BlogToc`, `WizardStepper`, `AddressForm`, `EmptyState`, `SectionEyebrow`, `PageHero` — semua pakai tokens (`var(--coffee)`, `var(--sage)`, dst), tipografi Fraunces+Inter, hairline border, dekorasi `BeanMark` di slot ambient.
 
-## Stage 1 — Public website + customer auth
+## Data layer
 
-Homepage, Shop (grid + filter + sort + pagination), Product detail (gallery, tasting notes, reviews, related), Single Origin, Blend, Custom Coffee Builder (4 steps), Accessories, Blog list + detail, About, Contact, Auth pages (login, register, forgot/reset, Google), Profile/Address book/Wishlist/Order history shells.
+- Public reads (shop, product detail, blog, origin, related): `createServerFn` GET pakai server publishable client. Kolom dipilih ekslisit, tanpa kolom internal.
+- User-scoped (profile, address, wishlist): `createServerFn` + `requireSupabaseAuth`.
+- TanStack Query: `ensureQueryData` di loader rute publik, `useSuspenseQuery` di komponen. Loader protected hanya di bawah `_authenticated/`.
+- Setiap route punya `head()` Bahasa Indonesia (title, description, og:title/description), produk & artikel pakai gambar utama sebagai `og:image`.
+- Setiap route ber-loader punya `errorComponent` + `notFoundComponent`.
 
-## Stage 2 — Cart → Checkout → Tracking
+## Image assets
 
-Cart (CRUD, voucher, catatan, subtotal, est. ongkir manual flat per kurir), Checkout (penerima, kurir JNE/J&T/SiCepat/AnterAja, bank BCA/Mandiri/BNI/BRI), Order number generator `CBJ-YYYY-NNNNNN`, Konfirmasi Pembayaran (upload bukti), Tracking timeline, Review produk (gated by purchase), Notifikasi (in-app bell + table).
+Generate via `imagegen` (fast): 6 hero origin (Gayo/Toraja/Kintamani/Java Preanger/Flores Bajawa/Papua), 12 foto produk default, 3 thumbnail blog, hero About, ilustrasi bean tambahan untuk wizard. Disimpan di `src/assets/`.
 
-## Stage 3 — Admin panel
+## Yang tidak dikerjakan di stage ini
 
-Sidebar shell under `_authenticated/admin` gated by `has_role('admin')`. Dashboard (revenue, today's orders, top product, top origin, sales chart via recharts), Produk CRUD + bulk upload + low-stock alert, Pesanan list/filter, Verifikasi Pembayaran (zoom bukti, approve/reject + alasan), Input resi + update status, Refund, Pelanggan (LTV), Blog CRUD, Promo/Voucher CRUD, Analytics (view, ATC, checkout, purchase, conversion, repeat order).
-
-## Stage 4 — Phase 2
-
-Subscription Coffee (Explorer/Nusantara/Premium boxes), Loyalty points + rewards + membership tiers, Recommendation engine (collaborative + content-based on origin/roast), Community forum (threads, recipes, events).
-
----
-
-## Database schema (Stage 0)
-
-`profiles, user_roles, addresses, origins, categories, products, product_images, cart, cart_items, orders, order_items, payments, payment_proofs, shipments, wishlist, reviews, review_photos, blogs, blog_categories, coupons, coupon_redemptions, notifications, subscriptions, subscription_deliveries, loyalty_points, loyalty_transactions, activity_logs, forum_threads, forum_posts, recipes, events`
-
-Every public-schema table gets `GRANT` + `ENABLE RLS` + policies scoped to `auth.uid()` or `has_role()`. Admin-only tables (`coupons`, `activity_logs`) gated by `has_role('admin')`.
+Keranjang, checkout, voucher, ongkir, upload bukti, tracking, notifikasi → **Stage 2**.
+Admin panel apapun → **Stage 3**.
+Subscription, loyalty redeem, forum, recipe, event → **Stage 4**.
 
 ## Tech notes
 
-- TanStack Start file routes. Public routes top-level; signed-in routes under `src/routes/_authenticated/`; admin under `src/routes/_authenticated/admin/`.
-- Data: `createServerFn` + `requireSupabaseAuth` for user-scoped reads/writes; public reads via server publishable client; admin ops via `supabaseAdmin` loaded inside handlers after `has_role` check.
-- TanStack Query for caching; loaders prime cache with `ensureQueryData`.
-- Images: `imagegen` for hero, product placeholders, bean illustrations, blog thumbnails — generated as needed per stage.
-- All copy in Bahasa Indonesia, friendly + premium + artisan tone.
-- No Midtrans/RajaOngkir; ongkir is flat per kurir (editable in admin settings later).
+- Tidak ada hardcoded hex di komponen — pakai CSS var atau token shadcn.
+- Semua copy + toast Bahasa Indonesia, tone hangat + edukatif.
+- Validasi form pakai Zod (trim, max length, email format).
+- Tombol cart/wishlist tampil aktif visual tapi menampilkan toast “Fitur aktif di tahap berikutnya” supaya UX tidak terasa broken sebelum Stage 2.
 
----
-
-## What I'll do **this turn** if you approve
-
-Stage 0 only: enable Cloud, write the full migration with RLS + grants, set up design tokens + fonts + layout shell + bean SVGs, scaffold auth pages, seed origins/products/blog. No customer flows yet — those start in Stage 1.
-
-Reply **"lanjut"** to start Stage 0, or tell me to adjust scope/order.
+Balas **"lanjut"** untuk mulai Stage 1, atau beri tahu jika ada halaman yang ingin diprioritaskan / dipangkas.
