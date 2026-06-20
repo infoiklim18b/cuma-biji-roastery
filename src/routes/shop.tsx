@@ -70,7 +70,7 @@ function ShopPage() {
 
   function setParam(key: string, value?: string) {
     navigate({
-      search: (prev) => ({ ...prev, [key]: value || undefined }),
+      search: (prev: z.infer<typeof searchSchema>) => ({ ...prev, [key]: value || undefined }),
       replace: true,
     });
   }

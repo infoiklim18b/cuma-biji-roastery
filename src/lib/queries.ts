@@ -237,9 +237,10 @@ export const reviewsQuery = (productId: string) =>
   queryOptions({
     queryKey: ["reviews", productId],
     queryFn: async () => {
+      if (!productId) return [];
       const { data, error } = await supabase
         .from("reviews")
-        .select("id,rating,comment,created_at,user_id,profiles(full_name,avatar_url)")
+        .select("id,rating,body,created_at,user_id")
         .eq("product_id", productId)
         .order("created_at", { ascending: false });
       if (error) throw error;

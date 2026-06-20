@@ -32,7 +32,10 @@ function BlogIndex() {
   const { data: posts, isLoading } = useQuery(blogsQuery(search.cat, search.q));
 
   function setParam(key: string, v?: string) {
-    navigate({ search: (prev) => ({ ...prev, [key]: v || undefined }), replace: true });
+    navigate({
+      search: (prev: z.infer<typeof searchSchema>) => ({ ...prev, [key]: v || undefined }),
+      replace: true,
+    });
   }
 
   return (

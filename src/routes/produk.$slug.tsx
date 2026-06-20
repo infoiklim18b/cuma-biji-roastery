@@ -69,9 +69,16 @@ function ProductDetailPage() {
       ? product.product_images.sort((a, b) => a.sort_order - b.sort_order).map((i) => i.url)
       : [product.thumbnail || productBag];
 
+  const reviewList = (reviews ?? []) as Array<{
+    id: string;
+    rating: number | null;
+    body: string | null;
+    created_at: string;
+    user_id: string;
+  }>;
   const avgRating =
-    reviews && reviews.length > 0
-      ? reviews.reduce((s, r) => s + (r.rating ?? 0), 0) / reviews.length
+    reviewList.length > 0
+      ? reviewList.reduce((s, r) => s + (r.rating ?? 0), 0) / reviewList.length
       : 0;
 
   const relatedProducts = (related ?? []).filter((p) => p.slug !== slug).slice(0, 4);
@@ -234,23 +241,21 @@ function ProductDetailPage() {
             </div>
             <RatingStars value={avgRating} size={18} />
           </div>
-          {reviews && reviews.length > 0 ? (
+          {reviewList.length > 0 ? (
             <div className="grid gap-6 md:grid-cols-2">
-              {reviews.map((r) => (
+              {reviewList.map((r) => (
                 <article
                   key={r.id}
                   className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] p-6"
                 >
                   <div className="flex items-center justify-between">
-                    <p className="font-medium text-[color:var(--coffee)]">
-                      {(r as { profiles?: { full_name?: string } }).profiles?.full_name ?? "Pelanggan"}
-                    </p>
+                    <p className="font-medium text-[color:var(--coffee)]">Pelanggan</p>
                     <RatingStars value={r.rating ?? 0} />
                   </div>
                   <p className="mt-2 text-xs text-[color:var(--muted-foreground)]">
                     {formatDate(r.created_at)}
                   </p>
-                  <p className="mt-4 text-sm">{r.comment}</p>
+                  {r.body && <p className="mt-4 text-sm">{r.body}</p>}
                 </article>
               ))}
             </div>

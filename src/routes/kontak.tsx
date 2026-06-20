@@ -41,7 +41,7 @@ function ContactPage() {
       action: "contact_message",
       entity: "contact",
       user_id: userData.user?.id ?? null,
-      meta: parsed.data as unknown as Record<string, unknown>,
+      meta: { name: parsed.data.name, email: parsed.data.email, message: parsed.data.message },
     });
     setLoading(false);
     if (error) {
