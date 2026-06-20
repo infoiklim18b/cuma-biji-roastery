@@ -17,7 +17,7 @@ export function Footer() {
       </div>
       <div className="border-t border-[color:var(--border)]">
         <div className="container-editorial flex flex-col md:flex-row items-start md:items-center justify-between gap-3 py-6 text-xs text-[color:var(--muted-foreground)]">
-          <span>© {new Date().getFullYear()} Cuma Biji. Dibuat dengan biji terbaik.</span>
+          <span>© {new Date().getFullYear()} Cuma Biji. Dibuat dengan biji terbaik. Ini biji yang paling biji.</span>
           <span>Jakarta · Bandung · Bali</span>
         </div>
       </div>
