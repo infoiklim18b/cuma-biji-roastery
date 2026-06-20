@@ -1,8 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ComingSoon } from "@/components/cuma/ComingSoon";
+import { AccountLayout } from "@/components/cuma/AccountLayout";
+import { EmptyState } from "@/components/cuma/EmptyState";
 
 export const Route = createFileRoute("/_authenticated/akun/review")({
+  head: () => ({ meta: [{ title: "Review saya — Cuma Biji" }] }),
   component: () => (
-    <ComingSoon eyebrow="Review" title="Review yang kamu tulis." description="Tersedia setelah ada pesanan selesai." />
+    <AccountLayout title="Review saya">
+      <EmptyState
+        title="Belum ada ulasan"
+        description="Kamu bisa menulis ulasan setelah pesanan diterima. Setiap ulasan membantu pelanggan lain memilih."
+      />
+    </AccountLayout>
   ),
 });
