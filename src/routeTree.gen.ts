@@ -25,10 +25,13 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AccessoriesRouteImport } from './routes/accessories'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SingleOriginSlugRouteImport } from './routes/single-origin.$slug'
+import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedAkunRouteImport } from './routes/_authenticated/akun'
 import { Route as AuthenticatedAkunWishlistRouteImport } from './routes/_authenticated/akun.wishlist'
 import { Route as AuthenticatedAkunReviewRouteImport } from './routes/_authenticated/akun.review'
+import { Route as AuthenticatedAkunProfilRouteImport } from './routes/_authenticated/akun.profil'
 import { Route as AuthenticatedAkunPesananRouteImport } from './routes/_authenticated/akun.pesanan'
 import { Route as AuthenticatedAkunAlamatRouteImport } from './routes/_authenticated/akun.alamat'
 
@@ -111,6 +114,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SingleOriginSlugRoute = SingleOriginSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => SingleOriginRoute,
+} as any)
+const ProdukSlugRoute = ProdukSlugRouteImport.update({
+  id: '/produk/$slug',
+  path: '/produk/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -130,6 +143,11 @@ const AuthenticatedAkunWishlistRoute =
 const AuthenticatedAkunReviewRoute = AuthenticatedAkunReviewRouteImport.update({
   id: '/review',
   path: '/review',
+  getParentRoute: () => AuthenticatedAkunRoute,
+} as any)
+const AuthenticatedAkunProfilRoute = AuthenticatedAkunProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
   getParentRoute: () => AuthenticatedAkunRoute,
 } as any)
 const AuthenticatedAkunPesananRoute =
@@ -157,13 +175,16 @@ export interface FileRoutesByFullPath {
   '/kontak': typeof KontakRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
-  '/single-origin': typeof SingleOriginRoute
+  '/single-origin': typeof SingleOriginRouteWithChildren
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
   '/akun': typeof AuthenticatedAkunRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
+  '/produk/$slug': typeof ProdukSlugRoute
+  '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
   '/akun/pesanan': typeof AuthenticatedAkunPesananRoute
+  '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
 }
@@ -180,13 +201,16 @@ export interface FileRoutesByTo {
   '/kontak': typeof KontakRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
-  '/single-origin': typeof SingleOriginRoute
+  '/single-origin': typeof SingleOriginRouteWithChildren
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
   '/akun': typeof AuthenticatedAkunRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
+  '/produk/$slug': typeof ProdukSlugRoute
+  '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
   '/akun/pesanan': typeof AuthenticatedAkunPesananRoute
+  '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
 }
@@ -205,13 +229,16 @@ export interface FileRoutesById {
   '/kontak': typeof KontakRoute
   '/reset-password': typeof ResetPasswordRoute
   '/shop': typeof ShopRoute
-  '/single-origin': typeof SingleOriginRoute
+  '/single-origin': typeof SingleOriginRouteWithChildren
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
   '/_authenticated/akun': typeof AuthenticatedAkunRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
+  '/produk/$slug': typeof ProdukSlugRoute
+  '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/_authenticated/akun/alamat': typeof AuthenticatedAkunAlamatRoute
   '/_authenticated/akun/pesanan': typeof AuthenticatedAkunPesananRoute
+  '/_authenticated/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/_authenticated/akun/review': typeof AuthenticatedAkunReviewRoute
   '/_authenticated/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
 }
@@ -235,8 +262,11 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/akun'
     | '/blog/$slug'
+    | '/produk/$slug'
+    | '/single-origin/$slug'
     | '/akun/alamat'
     | '/akun/pesanan'
+    | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
   fileRoutesByTo: FileRoutesByTo
@@ -258,8 +288,11 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/akun'
     | '/blog/$slug'
+    | '/produk/$slug'
+    | '/single-origin/$slug'
     | '/akun/alamat'
     | '/akun/pesanan'
+    | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
   id:
@@ -282,8 +315,11 @@ export interface FileRouteTypes {
     | '/tentang'
     | '/_authenticated/akun'
     | '/blog/$slug'
+    | '/produk/$slug'
+    | '/single-origin/$slug'
     | '/_authenticated/akun/alamat'
     | '/_authenticated/akun/pesanan'
+    | '/_authenticated/akun/profil'
     | '/_authenticated/akun/review'
     | '/_authenticated/akun/wishlist'
   fileRoutesById: FileRoutesById
@@ -302,9 +338,10 @@ export interface RootRouteChildren {
   KontakRoute: typeof KontakRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ShopRoute: typeof ShopRoute
-  SingleOriginRoute: typeof SingleOriginRoute
+  SingleOriginRoute: typeof SingleOriginRouteWithChildren
   SyaratRoute: typeof SyaratRoute
   TentangRoute: typeof TentangRoute
+  ProdukSlugRoute: typeof ProdukSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -421,6 +458,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/single-origin/$slug': {
+      id: '/single-origin/$slug'
+      path: '/$slug'
+      fullPath: '/single-origin/$slug'
+      preLoaderRoute: typeof SingleOriginSlugRouteImport
+      parentRoute: typeof SingleOriginRoute
+    }
+    '/produk/$slug': {
+      id: '/produk/$slug'
+      path: '/produk/$slug'
+      fullPath: '/produk/$slug'
+      preLoaderRoute: typeof ProdukSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/$slug'
@@ -449,6 +500,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAkunReviewRouteImport
       parentRoute: typeof AuthenticatedAkunRoute
     }
+    '/_authenticated/akun/profil': {
+      id: '/_authenticated/akun/profil'
+      path: '/profil'
+      fullPath: '/akun/profil'
+      preLoaderRoute: typeof AuthenticatedAkunProfilRouteImport
+      parentRoute: typeof AuthenticatedAkunRoute
+    }
     '/_authenticated/akun/pesanan': {
       id: '/_authenticated/akun/pesanan'
       path: '/pesanan'
@@ -469,6 +527,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAkunRouteChildren {
   AuthenticatedAkunAlamatRoute: typeof AuthenticatedAkunAlamatRoute
   AuthenticatedAkunPesananRoute: typeof AuthenticatedAkunPesananRoute
+  AuthenticatedAkunProfilRoute: typeof AuthenticatedAkunProfilRoute
   AuthenticatedAkunReviewRoute: typeof AuthenticatedAkunReviewRoute
   AuthenticatedAkunWishlistRoute: typeof AuthenticatedAkunWishlistRoute
 }
@@ -476,6 +535,7 @@ interface AuthenticatedAkunRouteChildren {
 const AuthenticatedAkunRouteChildren: AuthenticatedAkunRouteChildren = {
   AuthenticatedAkunAlamatRoute: AuthenticatedAkunAlamatRoute,
   AuthenticatedAkunPesananRoute: AuthenticatedAkunPesananRoute,
+  AuthenticatedAkunProfilRoute: AuthenticatedAkunProfilRoute,
   AuthenticatedAkunReviewRoute: AuthenticatedAkunReviewRoute,
   AuthenticatedAkunWishlistRoute: AuthenticatedAkunWishlistRoute,
 }
@@ -504,6 +564,18 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
+interface SingleOriginRouteChildren {
+  SingleOriginSlugRoute: typeof SingleOriginSlugRoute
+}
+
+const SingleOriginRouteChildren: SingleOriginRouteChildren = {
+  SingleOriginSlugRoute: SingleOriginSlugRoute,
+}
+
+const SingleOriginRouteWithChildren = SingleOriginRoute._addFileChildren(
+  SingleOriginRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -518,20 +590,11 @@ const rootRouteChildren: RootRouteChildren = {
   KontakRoute: KontakRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ShopRoute: ShopRoute,
-  SingleOriginRoute: SingleOriginRoute,
+  SingleOriginRoute: SingleOriginRouteWithChildren,
   SyaratRoute: SyaratRoute,
   TentangRoute: TentangRoute,
+  ProdukSlugRoute: ProdukSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
