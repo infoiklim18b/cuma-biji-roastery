@@ -1,8 +1,12 @@
-import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { Menu, ShoppingBag, User, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Logo } from "./Logo";
-import { supabase } from "@/integrations/supabase/client";
+import { NotificationBell } from "./NotificationBell";
+
+import { cartQuery } from "@/lib/cart";
+import { useUserId } from "@/lib/use-user";
 
 const nav = [
   { to: "/shop", label: "Shop" },
@@ -16,19 +20,12 @@ const nav = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const [signedIn, setSignedIn] = useState(false);
+  const { userId } = useUserId();
+  const navigate = useNavigate();
+  const signedIn = !!userId;
 
-  useEffect(() => {
-    let active = true;
-    supabase.auth.getSession().then(({ data }) => active && setSignedIn(!!data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) =>
-      setSignedIn(!!session),
-    );
-    return () => {
-      active = false;
-      sub.subscription.unsubscribe();
-    };
-  }, []);
+  const { data: cart } = useQuery({ ...cartQuery(userId), enabled: !!userId });
+  const cartCount = cart?.items.reduce((s, i) => s + i.qty, 0) ?? 0;
 
   return (
     <header className="sticky top-0 z-40 border-b border-[color:var(--border)] bg-[color:var(--background)]/85 backdrop-blur">
@@ -46,7 +43,8 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          {signedIn && <NotificationBell />}
           <Link
             to={signedIn ? "/akun" : "/auth"}
             className="rounded-full p-2 hover:bg-[color:var(--secondary)] transition-colors"
@@ -54,13 +52,25 @@ export function Header() {
           >
             <User className="h-5 w-5" />
           </Link>
-          <Link
-            to="/keranjang"
-            className="rounded-full p-2 hover:bg-[color:var(--secondary)] transition-colors"
+          <button
+            type="button"
+            onClick={() => {
+              if (!signedIn) {
+                navigate({ to: "/auth" });
+                return;
+              }
+              navigate({ to: "/keranjang" });
+            }}
+            className="relative rounded-full p-2 hover:bg-[color:var(--secondary)] transition-colors"
             aria-label="Keranjang"
           >
             <ShoppingBag className="h-5 w-5" />
-          </Link>
+            {cartCount > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[color:var(--coffee)] px-1 text-[10px] font-medium text-[color:var(--cream)]">
+                {cartCount > 9 ? "9+" : cartCount}
+              </span>
+            )}
+          </button>
           <button
             type="button"
             className="rounded-full p-2 lg:hidden hover:bg-[color:var(--secondary)]"
@@ -90,3 +100,4 @@ export function Header() {
     </header>
   );
 }
+

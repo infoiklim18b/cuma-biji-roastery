@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
-import { LogOut, MapPin, Heart, Package, Star, User as UserIcon, Settings } from "lucide-react";
+import { LogOut, MapPin, Heart, Package, Star, User as UserIcon, Settings, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,8 @@ import { PublicLayout } from "./PublicLayout";
 const nav = [
   { to: "/akun", label: "Dashboard", Icon: UserIcon, exact: true },
   { to: "/akun/profil", label: "Profil", Icon: Settings, exact: true },
-  { to: "/akun/pesanan", label: "Pesanan saya", Icon: Package, exact: true },
+  { to: "/akun/pesanan", label: "Pesanan saya", Icon: Package, exact: false },
+  { to: "/akun/notifikasi", label: "Notifikasi", Icon: Bell, exact: true },
   { to: "/akun/alamat", label: "Alamat", Icon: MapPin, exact: true },
   { to: "/akun/wishlist", label: "Wishlist", Icon: Heart, exact: true },
   { to: "/akun/review", label: "Review saya", Icon: Star, exact: true },

@@ -1,11 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useReducer } from "react";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { PublicLayout } from "@/components/cuma/PublicLayout";
 import { PageHero } from "@/components/cuma/PageHero";
 import { originsQuery } from "@/lib/queries";
+import { addCustomToCart, type Grind } from "@/lib/cart";
+import { useUserId } from "@/lib/use-user";
 import { formatIDR } from "@/lib/format";
 
 export const Route = createFileRoute("/custom")({
@@ -66,9 +68,14 @@ function reducer(s: State, a: Action): State {
 function CustomBuilder() {
   const [state, dispatch] = useReducer(reducer, { step: 1 });
   const { data: origins } = useQuery(originsQuery());
+  const { userId } = useUserId();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
 
   const weight = WEIGHT.find((w) => w.v === state.weight);
-  const price = weight?.base ?? 0;
+  const roastPremium = state.roast === "light" || state.roast === "medium_dark" ? 5000 : state.roast === "dark" ? 8000 : 0;
+  const grindPremium = state.grind && state.grind !== "whole_bean" ? 3000 : 0;
+  const price = (weight?.base ?? 0) + roastPremium + grindPremium;
 
   function next() {
     if (state.step === 1 && !state.origin) return toast.error("Pilih origin dulu.");
@@ -78,13 +85,36 @@ function CustomBuilder() {
     dispatch({ type: "next" });
   }
 
-  function addToCart() {
+  async function addToCart() {
     if (!state.origin || !state.roast || !state.weight || !state.grind) {
       toast.error("Lengkapi semua langkah terlebih dulu.");
       return;
     }
-    toast.info("Keranjang aktif di tahap berikutnya — racikanmu akan kembali tersedia.");
+    if (!userId) {
+      toast.info("Masuk dulu untuk menyimpan racikan.");
+      navigate({ to: "/auth" });
+      return;
+    }
+    const originName = origins?.find((o) => o.slug === state.origin)?.name ?? state.origin;
+    const roastName = ROAST.find((r) => r.v === state.roast)?.l ?? state.roast;
+    try {
+      await addCustomToCart(userId, {
+        origin: state.origin,
+        roast: state.roast,
+        weight: state.weight,
+        grind: state.grind as Grind,
+        price,
+        name: `Custom · ${originName} · ${roastName} · ${weight?.l}`,
+      });
+      qc.invalidateQueries({ queryKey: ["cart", userId] });
+      toast.success("Racikanmu masuk keranjang ☕", {
+        action: { label: "Lihat keranjang", onClick: () => navigate({ to: "/keranjang" }) },
+      });
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
   }
+
 
   return (
     <PublicLayout>

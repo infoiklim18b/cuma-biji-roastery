@@ -1,12 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { ShoppingBag, Trash2 } from "lucide-react";
 import { AccountLayout } from "@/components/cuma/AccountLayout";
 import { EmptyState } from "@/components/cuma/EmptyState";
 import { wishlistQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
+import { addProductToCart } from "@/lib/cart";
 import { formatIDR } from "@/lib/format";
 import productBag from "@/assets/product-bag.jpg";
 
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/_authenticated/akun/wishlist")({
 function WishlistPage() {
   const [userId, setUserId] = useState("");
   const qc = useQueryClient();
+  const navigate = useNavigate();
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? ""));
   }, []);
@@ -30,6 +32,20 @@ function WishlistPage() {
       return;
     }
     qc.invalidateQueries({ queryKey: ["wishlist", userId] });
+  }
+
+  async function moveToCart(p: { id: string; name: string; price: number; weight_g: number | null }, wishId: string) {
+    try {
+      await addProductToCart(userId, p, 1);
+      await supabase.from("wishlist").delete().eq("id", wishId);
+      qc.invalidateQueries({ queryKey: ["wishlist", userId] });
+      qc.invalidateQueries({ queryKey: ["cart", userId] });
+      toast.success("Dipindah ke keranjang", {
+        action: { label: "Lihat", onClick: () => navigate({ to: "/keranjang" }) },
+      });
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
   }
 
   const items = data ?? [];
@@ -78,14 +94,33 @@ function WishlistPage() {
                   {formatIDR(w.products.price)}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => handleRemove(w.id)}
-                title="Hapus"
-                className="rounded-full p-2 text-[color:var(--destructive)] hover:bg-[color:var(--secondary)]"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
+              <div className="flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    moveToCart(
+                      {
+                        id: w.products.id,
+                        name: w.products.name,
+                        price: w.products.price,
+                        weight_g: w.products.weight_g,
+                      },
+                      w.id,
+                    )
+                  }
+                  className="inline-flex items-center gap-1 rounded-full bg-[color:var(--coffee)] px-3 py-1.5 text-xs text-[color:var(--cream)]"
+                >
+                  <ShoppingBag className="h-3 w-3" /> Ke keranjang
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRemove(w.id)}
+                  title="Hapus"
+                  className="rounded-full p-2 text-[color:var(--destructive)] hover:bg-[color:var(--secondary)]"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
             </article>
           ))}
         </div>

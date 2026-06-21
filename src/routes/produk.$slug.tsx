@@ -1,13 +1,17 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Heart, ShoppingBag, Share2, ChevronLeft } from "lucide-react";
+import { ShoppingBag, Share2, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { PublicLayout } from "@/components/cuma/PublicLayout";
 import { ProductCard, roastLabel, processLabel } from "@/components/cuma/ProductCard";
 import { Meter, RatingStars } from "@/components/cuma/RatingStars";
 import { EmptyState } from "@/components/cuma/EmptyState";
+import { WishlistButton } from "@/components/cuma/WishlistButton";
+import { QuantityStepper } from "@/components/cuma/QuantityStepper";
 import { productBySlugQuery, productsQuery, reviewsQuery } from "@/lib/queries";
+import { addProductToCart } from "@/lib/cart";
+import { useUserId } from "@/lib/use-user";
 import { formatIDR, formatDate } from "@/lib/format";
 import productBag from "@/assets/product-bag.jpg";
 
@@ -61,6 +65,10 @@ function ProductDetailPage() {
     }),
   );
   const [activeImg, setActiveImg] = useState(0);
+  const [qty, setQty] = useState(1);
+  const { userId } = useUserId();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
 
   if (!product) return null;
 
@@ -83,9 +91,28 @@ function ProductDetailPage() {
 
   const relatedProducts = (related ?? []).filter((p) => p.slug !== slug).slice(0, 4);
 
-  function notYet() {
-    toast.info("Fitur keranjang aktif di tahap berikutnya.");
+  async function handleAddToCart() {
+    if (!product) return;
+    if (!userId) {
+      toast.info("Masuk dulu untuk menambah ke keranjang.");
+      navigate({ to: "/auth" });
+      return;
+    }
+    try {
+      await addProductToCart(
+        userId,
+        { id: product.id, name: product.name, price: product.price, weight_g: product.weight_g },
+        qty,
+      );
+      qc.invalidateQueries({ queryKey: ["cart", userId] });
+      toast.success("Ditambahkan ke keranjang", {
+        action: { label: "Lihat", onClick: () => navigate({ to: "/keranjang" }) },
+      });
+    } catch (err) {
+      toast.error((err as Error).message);
+    }
   }
+
 
   return (
     <PublicLayout>
@@ -194,23 +221,20 @@ function ProductDetailPage() {
           )}
 
           {/* CTA */}
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            {product.stock > 0 && (
+              <QuantityStepper value={qty} max={product.stock} onChange={setQty} />
+            )}
             <button
               type="button"
-              onClick={notYet}
+              onClick={handleAddToCart}
               disabled={product.stock === 0}
               className="inline-flex items-center gap-2 rounded-full bg-[color:var(--coffee)] px-6 py-3 text-sm font-medium text-[color:var(--primary-foreground)] hover:opacity-90 disabled:opacity-40"
             >
               <ShoppingBag className="h-4 w-4" />
               {product.stock === 0 ? "Stok habis" : "Tambah ke keranjang"}
             </button>
-            <button
-              type="button"
-              onClick={notYet}
-              className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--background)] px-5 py-3 text-sm hover:bg-[color:var(--secondary)]"
-            >
-              <Heart className="h-4 w-4" /> Wishlist
-            </button>
+            <WishlistButton productId={product.id} variant="button" />
             <button
               type="button"
               onClick={() => {
@@ -228,6 +252,7 @@ function ProductDetailPage() {
           </div>
         </div>
       </section>
+
 
       {/* REVIEWS */}
       <section className="border-t border-[color:var(--border)] bg-[color:var(--cream)]">
