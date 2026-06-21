@@ -34,6 +34,7 @@ import { Route as AuthenticatedAkunWishlistRouteImport } from './routes/_authent
 import { Route as AuthenticatedAkunReviewRouteImport } from './routes/_authenticated/akun.review'
 import { Route as AuthenticatedAkunProfilRouteImport } from './routes/_authenticated/akun.profil'
 import { Route as AuthenticatedAkunPesananRouteImport } from './routes/_authenticated/akun.pesanan'
+import { Route as AuthenticatedAkunNotifikasiRouteImport } from './routes/_authenticated/akun.notifikasi'
 import { Route as AuthenticatedAkunAlamatRouteImport } from './routes/_authenticated/akun.alamat'
 import { Route as AuthenticatedCheckoutSuksesOrderNumberRouteImport } from './routes/_authenticated/checkout.sukses.$orderNumber'
 import { Route as AuthenticatedAkunPesananOrderNumberRouteImport } from './routes/_authenticated/akun.pesanan.$orderNumber'
@@ -165,6 +166,12 @@ const AuthenticatedAkunPesananRoute =
     path: '/pesanan',
     getParentRoute: () => AuthenticatedAkunRoute,
   } as any)
+const AuthenticatedAkunNotifikasiRoute =
+  AuthenticatedAkunNotifikasiRouteImport.update({
+    id: '/notifikasi',
+    path: '/notifikasi',
+    getParentRoute: () => AuthenticatedAkunRoute,
+  } as any)
 const AuthenticatedAkunAlamatRoute = AuthenticatedAkunAlamatRouteImport.update({
   id: '/alamat',
   path: '/alamat',
@@ -211,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
+  '/akun/notifikasi': typeof AuthenticatedAkunNotifikasiRoute
   '/akun/pesanan': typeof AuthenticatedAkunPesananRouteWithChildren
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
@@ -241,6 +249,7 @@ export interface FileRoutesByTo {
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
+  '/akun/notifikasi': typeof AuthenticatedAkunNotifikasiRoute
   '/akun/pesanan': typeof AuthenticatedAkunPesananRouteWithChildren
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
@@ -273,6 +282,7 @@ export interface FileRoutesById {
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/_authenticated/akun/alamat': typeof AuthenticatedAkunAlamatRoute
+  '/_authenticated/akun/notifikasi': typeof AuthenticatedAkunNotifikasiRoute
   '/_authenticated/akun/pesanan': typeof AuthenticatedAkunPesananRouteWithChildren
   '/_authenticated/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/_authenticated/akun/review': typeof AuthenticatedAkunReviewRoute
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/produk/$slug'
     | '/single-origin/$slug'
     | '/akun/alamat'
+    | '/akun/notifikasi'
     | '/akun/pesanan'
     | '/akun/profil'
     | '/akun/review'
@@ -335,6 +346,7 @@ export interface FileRouteTypes {
     | '/produk/$slug'
     | '/single-origin/$slug'
     | '/akun/alamat'
+    | '/akun/notifikasi'
     | '/akun/pesanan'
     | '/akun/profil'
     | '/akun/review'
@@ -366,6 +378,7 @@ export interface FileRouteTypes {
     | '/produk/$slug'
     | '/single-origin/$slug'
     | '/_authenticated/akun/alamat'
+    | '/_authenticated/akun/notifikasi'
     | '/_authenticated/akun/pesanan'
     | '/_authenticated/akun/profil'
     | '/_authenticated/akun/review'
@@ -572,6 +585,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAkunPesananRouteImport
       parentRoute: typeof AuthenticatedAkunRoute
     }
+    '/_authenticated/akun/notifikasi': {
+      id: '/_authenticated/akun/notifikasi'
+      path: '/notifikasi'
+      fullPath: '/akun/notifikasi'
+      preLoaderRoute: typeof AuthenticatedAkunNotifikasiRouteImport
+      parentRoute: typeof AuthenticatedAkunRoute
+    }
     '/_authenticated/akun/alamat': {
       id: '/_authenticated/akun/alamat'
       path: '/alamat'
@@ -635,6 +655,7 @@ const AuthenticatedAkunPesananRouteWithChildren =
 
 interface AuthenticatedAkunRouteChildren {
   AuthenticatedAkunAlamatRoute: typeof AuthenticatedAkunAlamatRoute
+  AuthenticatedAkunNotifikasiRoute: typeof AuthenticatedAkunNotifikasiRoute
   AuthenticatedAkunPesananRoute: typeof AuthenticatedAkunPesananRouteWithChildren
   AuthenticatedAkunProfilRoute: typeof AuthenticatedAkunProfilRoute
   AuthenticatedAkunReviewRoute: typeof AuthenticatedAkunReviewRoute
@@ -643,6 +664,7 @@ interface AuthenticatedAkunRouteChildren {
 
 const AuthenticatedAkunRouteChildren: AuthenticatedAkunRouteChildren = {
   AuthenticatedAkunAlamatRoute: AuthenticatedAkunAlamatRoute,
+  AuthenticatedAkunNotifikasiRoute: AuthenticatedAkunNotifikasiRoute,
   AuthenticatedAkunPesananRoute: AuthenticatedAkunPesananRouteWithChildren,
   AuthenticatedAkunProfilRoute: AuthenticatedAkunProfilRoute,
   AuthenticatedAkunReviewRoute: AuthenticatedAkunReviewRoute,
