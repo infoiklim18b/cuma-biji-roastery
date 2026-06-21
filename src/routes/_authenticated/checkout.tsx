@@ -98,8 +98,8 @@ function CheckoutPage() {
         p_courier: courier,
         p_bank: bank,
         p_shipping_cost: shipping,
-        p_voucher_code: appliedVoucher?.code ?? null,
-        p_note: note || null,
+        p_voucher_code: appliedVoucher?.code ?? "",
+        p_note: note || "",
       });
       if (error) throw error;
       const order = data as { order_number: string };
