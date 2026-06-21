@@ -221,23 +221,20 @@ function ProductDetailPage() {
           )}
 
           {/* CTA */}
-          <div className="mt-10 flex flex-wrap gap-3">
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            {product.stock > 0 && (
+              <QuantityStepper value={qty} max={product.stock} onChange={setQty} />
+            )}
             <button
               type="button"
-              onClick={notYet}
+              onClick={handleAddToCart}
               disabled={product.stock === 0}
               className="inline-flex items-center gap-2 rounded-full bg-[color:var(--coffee)] px-6 py-3 text-sm font-medium text-[color:var(--primary-foreground)] hover:opacity-90 disabled:opacity-40"
             >
               <ShoppingBag className="h-4 w-4" />
               {product.stock === 0 ? "Stok habis" : "Tambah ke keranjang"}
             </button>
-            <button
-              type="button"
-              onClick={notYet}
-              className="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--background)] px-5 py-3 text-sm hover:bg-[color:var(--secondary)]"
-            >
-              <Heart className="h-4 w-4" /> Wishlist
-            </button>
+            <WishlistButton productId={product.id} variant="button" />
             <button
               type="button"
               onClick={() => {
@@ -255,6 +252,7 @@ function ProductDetailPage() {
           </div>
         </div>
       </section>
+
 
       {/* REVIEWS */}
       <section className="border-t border-[color:var(--border)] bg-[color:var(--cream)]">
