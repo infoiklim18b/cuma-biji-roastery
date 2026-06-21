@@ -35,6 +35,7 @@ import { Route as AuthenticatedAkunReviewRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAkunProfilRouteImport } from './routes/_authenticated/akun.profil'
 import { Route as AuthenticatedAkunPesananRouteImport } from './routes/_authenticated/akun.pesanan'
 import { Route as AuthenticatedAkunAlamatRouteImport } from './routes/_authenticated/akun.alamat'
+import { Route as AuthenticatedCheckoutSuksesOrderNumberRouteImport } from './routes/_authenticated/checkout.sukses.$orderNumber'
 
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
@@ -167,6 +168,12 @@ const AuthenticatedAkunAlamatRoute = AuthenticatedAkunAlamatRouteImport.update({
   path: '/alamat',
   getParentRoute: () => AuthenticatedAkunRoute,
 } as any)
+const AuthenticatedCheckoutSuksesOrderNumberRoute =
+  AuthenticatedCheckoutSuksesOrderNumberRouteImport.update({
+    id: '/sukses/$orderNumber',
+    path: '/sukses/$orderNumber',
+    getParentRoute: () => AuthenticatedCheckoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -185,7 +192,7 @@ export interface FileRoutesByFullPath {
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
   '/akun': typeof AuthenticatedAkunRouteWithChildren
-  '/checkout': typeof AuthenticatedCheckoutRoute
+  '/checkout': typeof AuthenticatedCheckoutRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
+  '/checkout/sukses/$orderNumber': typeof AuthenticatedCheckoutSuksesOrderNumberRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -212,7 +220,7 @@ export interface FileRoutesByTo {
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
   '/akun': typeof AuthenticatedAkunRouteWithChildren
-  '/checkout': typeof AuthenticatedCheckoutRoute
+  '/checkout': typeof AuthenticatedCheckoutRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
@@ -221,6 +229,7 @@ export interface FileRoutesByTo {
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
+  '/checkout/sukses/$orderNumber': typeof AuthenticatedCheckoutSuksesOrderNumberRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -241,7 +250,7 @@ export interface FileRoutesById {
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
   '/_authenticated/akun': typeof AuthenticatedAkunRouteWithChildren
-  '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
+  '/_authenticated/checkout': typeof AuthenticatedCheckoutRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
@@ -250,6 +259,7 @@ export interface FileRoutesById {
   '/_authenticated/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/_authenticated/akun/review': typeof AuthenticatedAkunReviewRoute
   '/_authenticated/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
+  '/_authenticated/checkout/sukses/$orderNumber': typeof AuthenticatedCheckoutSuksesOrderNumberRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -279,6 +289,7 @@ export interface FileRouteTypes {
     | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
+    | '/checkout/sukses/$orderNumber'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -306,6 +317,7 @@ export interface FileRouteTypes {
     | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
+    | '/checkout/sukses/$orderNumber'
   id:
     | '__root__'
     | '/'
@@ -334,6 +346,7 @@ export interface FileRouteTypes {
     | '/_authenticated/akun/profil'
     | '/_authenticated/akun/review'
     | '/_authenticated/akun/wishlist'
+    | '/_authenticated/checkout/sukses/$orderNumber'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -540,6 +553,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAkunAlamatRouteImport
       parentRoute: typeof AuthenticatedAkunRoute
     }
+    '/_authenticated/checkout/sukses/$orderNumber': {
+      id: '/_authenticated/checkout/sukses/$orderNumber'
+      path: '/sukses/$orderNumber'
+      fullPath: '/checkout/sukses/$orderNumber'
+      preLoaderRoute: typeof AuthenticatedCheckoutSuksesOrderNumberRouteImport
+      parentRoute: typeof AuthenticatedCheckoutRoute
+    }
   }
 }
 
@@ -562,14 +582,28 @@ const AuthenticatedAkunRouteChildren: AuthenticatedAkunRouteChildren = {
 const AuthenticatedAkunRouteWithChildren =
   AuthenticatedAkunRoute._addFileChildren(AuthenticatedAkunRouteChildren)
 
+interface AuthenticatedCheckoutRouteChildren {
+  AuthenticatedCheckoutSuksesOrderNumberRoute: typeof AuthenticatedCheckoutSuksesOrderNumberRoute
+}
+
+const AuthenticatedCheckoutRouteChildren: AuthenticatedCheckoutRouteChildren = {
+  AuthenticatedCheckoutSuksesOrderNumberRoute:
+    AuthenticatedCheckoutSuksesOrderNumberRoute,
+}
+
+const AuthenticatedCheckoutRouteWithChildren =
+  AuthenticatedCheckoutRoute._addFileChildren(
+    AuthenticatedCheckoutRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAkunRoute: typeof AuthenticatedAkunRouteWithChildren
-  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
+  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAkunRoute: AuthenticatedAkunRouteWithChildren,
-  AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
+  AuthenticatedCheckoutRoute: AuthenticatedCheckoutRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
