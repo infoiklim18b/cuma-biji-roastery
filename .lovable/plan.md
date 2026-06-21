@@ -1,54 +1,84 @@
-# Stage 1 — Public website + customer auth (build-ready)
+# Stage 2 — Keranjang, Checkout, Pembayaran, Tracking, Notifikasi
 
-Stage 0 sudah live (Cloud, schema lengkap + RLS, design tokens, layout shell, homepage, auth email + Google, akun shell, seed). Stage ini mengisi seluruh permukaan publik dan etalase produk. Tidak menyentuh cart/checkout/admin (itu Stage 2 & 3).
+Stage 0 (infra + auth) dan Stage 1 (katalog publik + akun shell) sudah live. Stage ini menyalakan seluruh alur transaksi end-to-end dengan **manual bank transfer + manual ongkir**, plus pusat notifikasi user. Belum menyentuh admin (Stage 3) maupun loyalty/subscription/forum (Stage 4).
 
-## Halaman yang dibangun
+## Alur yang dibangun
 
-1. **Shop `/shop`** — grid produk 3–4 kolom, filter sidebar (Origin, Roast Level, Process Method, rentang harga, rating), sort (Terbaru / Terlaris / Harga ↑ / Harga ↓), pagination 12 per halaman, search bar. Data dari `products` + `origins` via public server fn (publishable client, `TO anon` SELECT policy yang sudah ada).
-2. **Product Detail `/produk/$slug`** — galeri foto, nama, harga, stock badge, berat, origin (link), ketinggian, process, roast level, tasting notes chip, aroma/body/acidity bar, blok review + rating rata-rata, produk terkait (origin atau kategori sama). Tombol **Tambah ke Keranjang** & **Wishlist** masih stub toast "tersedia di tahap berikutnya" — slot logic Stage 2.
-3. **Single Origin `/single-origin`** — list 6 origin Nusantara sebagai kartu editorial (peta region kecil pakai ilustrasi, tasting profile, ketinggian, proses umum), tiap kartu link ke `/single-origin/$slug` dengan deskripsi panjang + daftar produk origin tsb.
-4. **Blend `/blend`** — list produk `kind = blend` dengan narasi house blend.
-5. **Custom Coffee Builder `/custom`** — wizard 4 langkah (Origin → Roast → Berat → Grind), progress indicator, preview ringkas + estimasi harga, tombol **Tambah ke Keranjang** stub (Stage 2 akan menulis ke `cart_items` dengan `product_kind = custom`). State lokal via `useReducer`.
-6. **Accessories `/accessories`** — grid kategori aksesoris (V60, Kalita, Moka Pot, French Press, grinder, dsb) dari `products` kind `accessory`.
-7. **Blog `/blog` & `/blog/$slug`** — list dengan kategori (Panduan Seduh, Mengenal Origin, Roasting Guide, Coffee Knowledge), search, artikel detail dengan TOC, related article, share. Konten dari `blogs` + `blog_categories`.
-8. **Tentang `/tentang`** — narasi brand, peta origin, value, tim.
-9. **Kontak `/kontak`** — form (nama, email, pesan) divalidasi Zod, kirim ke server fn `submitContactMessage` yang menyimpan ke `activity_logs` (tipe `contact_message`).
-10. **Auth `/auth` & `/reset-password`** — sudah ada Stage 0, tinggal poles state error (Bahasa Indonesia), inline “Lupa kata sandi?”, validasi Zod.
-11. **Customer Account `_authenticated/akun.*`** — isi shell-nya:
-    - `/akun` — kartu profil, ringkasan order terakhir, loyalty placeholder.
-    - `/akun/profil` — edit `profiles` (nama, no HP, avatar upload ke bucket `avatars`).
-    - `/akun/alamat` — CRUD `addresses` (set default).
-    - `/akun/wishlist` — list dari `wishlist`, hapus.
-    - `/akun/pesanan` — empty state "Belum ada pesanan" (data flow di Stage 2).
-    - `/akun/review` — empty state.
+1. **Keranjang `/keranjang`** — cart user (`cart` + `cart_items`), qty +/-, hapus, sub-total, badge "stok tersisa", kosong → empty state CTA ke `/shop`. Mini-cart drawer di Header (icon shopping bag → Sheet) tampil di semua halaman, sync via TanStack Query invalidation.
+2. **Tambah ke keranjang** — `ProductCard`, `produk/$slug`, dan **Custom Wizard** sekarang benar-benar menulis `cart_items` (untuk custom: simpan konfigurasi origin/roast/berat/grind di kolom `meta jsonb` + `product_kind='custom'`). Toast sukses + tombol "Lihat keranjang".
+3. **Checkout `/checkout`** — 3 langkah dalam satu halaman (stepper):
+   - **Alamat** — pilih dari `addresses` atau tambah baru (reuse `AddressForm`).
+   - **Pengiriman** — pilih kurir (JNE/JNT/SiCepat/Anteraja) + service level + **manual ongkir** (input nominal oleh user dari kalkulator estimasi sederhana berbasis berat & zona → tampil sebagai estimasi, dikonfirmasi admin nanti). Plus voucher (`WELCOME10`, `GRATISONGKIR`) via `coupons` + `coupon_redemptions` dengan validasi server-side.
+   - **Pembayaran** — pilih bank tujuan (BCA/Mandiri/BNI/BRI) dari konstanta rekening Cuma Biji, ringkasan order, tombol **Buat Pesanan**.
+   Submit memanggil `createOrder` server fn (`requireSupabaseAuth`) yang dalam satu transaksi: hitung ulang harga & diskon di server (jangan percaya client), kunci stok, buat `orders` (trigger auto-generate `CBJ-YYYY-NNNNNN`), `order_items` snapshot, `payments` (status `menunggu`), `shipments` draft, increment `coupon_redemptions`, kosongkan `cart_items`, kirim `notifications` "Pesanan dibuat".
+4. **Order Confirmation `/checkout/sukses/$orderNumber`** — instruksi transfer (bank, no rek, atas nama, nominal **unik** = total + 3 digit random untuk memudahkan verifikasi), countdown 24 jam, tombol "Upload bukti transfer".
+5. **Upload bukti `/akun/pesanan/$orderNumber/bayar`** — upload ke bucket `payment-proofs` (path `${userId}/${orderId}/...`), update `payments.proof_url` + status `menunggu_verifikasi`, update `orders.status` → `menunggu_verifikasi`, kirim notifikasi.
+6. **Detail pesanan `/akun/pesanan/$orderNumber`** — timeline status (menunggu_pembayaran → menunggu_verifikasi → diproses → dikirim → selesai), ringkasan item, alamat, total, info pembayaran, info pengiriman (kurir + resi bila ada), tombol **Tandai diterima** saat status `dikirim`, tombol **Batalkan** saat masih `menunggu_pembayaran`.
+7. **Daftar pesanan `/akun/pesanan`** — list real dari DB, filter status, search by order_number, pagination.
+8. **Review produk** — di detail order ber-status `selesai`, tombol **Tulis ulasan** per item → modal dengan rating 1-5 + body + upload foto opsional ke `review-photos`. `/akun/review` menampilkan review yang sudah & belum ditulis.
+9. **Wishlist** — tombol heart di `ProductCard` dan `/produk/$slug` sekarang aktif (insert/delete `wishlist`). `/akun/wishlist` sudah ada datanya, tambah tombol "Pindah ke keranjang".
+10. **Notifikasi** — dropdown bell di Header (badge unread count), pull dari `notifications`, klik → tandai read + navigate ke target (`/akun/pesanan/...`). Halaman penuh `/akun/notifikasi`.
 
-## Komponen reusable (baru)
+## Komponen baru
 
-`ProductCard`, `ProductGrid`, `FilterSidebar`, `SortDropdown`, `PriceTag`, `RatingStars`, `TastingNoteChip`, `OriginCard`, `BlogCard`, `BlogToc`, `WizardStepper`, `AddressForm`, `EmptyState`, `SectionEyebrow`, `PageHero` — semua pakai tokens (`var(--coffee)`, `var(--sage)`, dst), tipografi Fraunces+Inter, hairline border, dekorasi `BeanMark` di slot ambient.
+`CartDrawer`, `CartLineItem`, `QuantityStepper`, `CheckoutStepper`, `AddressPicker`, `ShippingPicker`, `VoucherInput`, `OrderSummary`, `BankInstructionCard`, `CountdownTimer`, `OrderStatusTimeline`, `OrderCard`, `ProofUploader`, `ReviewModal`, `WishlistButton`, `NotificationBell`, `NotificationItem`, `EmptyCart`.
 
-## Data layer
+## Server functions (`src/lib/*.functions.ts`)
 
-- Public reads (shop, product detail, blog, origin, related): `createServerFn` GET pakai server publishable client. Kolom dipilih ekslisit, tanpa kolom internal.
-- User-scoped (profile, address, wishlist): `createServerFn` + `requireSupabaseAuth`.
-- TanStack Query: `ensureQueryData` di loader rute publik, `useSuspenseQuery` di komponen. Loader protected hanya di bawah `_authenticated/`.
-- Setiap route punya `head()` Bahasa Indonesia (title, description, og:title/description), produk & artikel pakai gambar utama sebagai `og:image`.
-- Setiap route ber-loader punya `errorComponent` + `notFoundComponent`.
+Semua `requireSupabaseAuth`, hitung ulang di server, return DTO plain:
+- `cart.functions.ts`: `getMyCart`, `addToCart`, `updateCartItem`, `removeCartItem`, `clearCart`.
+- `checkout.functions.ts`: `previewCheckout` (validasi voucher + total), `createOrder` (transaksi penuh).
+- `orders.functions.ts`: `getMyOrders`, `getMyOrderByNumber`, `cancelOrder`, `markOrderReceived`.
+- `payments.functions.ts`: `submitPaymentProof` (validasi MIME + ukuran, simpan path).
+- `wishlist.functions.ts`: `toggleWishlist`.
+- `reviews.functions.ts`: `submitReview`.
+- `notifications.functions.ts`: `listMyNotifications`, `markRead`, `markAllRead`, `unreadCount`.
 
-## Image assets
+`attachSupabaseAuth` sudah terdaftar di `src/start.ts` dari Stage 0 — tinggal pakai.
 
-Generate via `imagegen` (fast): 6 hero origin (Gayo/Toraja/Kintamani/Java Preanger/Flores Bajawa/Papua), 12 foto produk default, 3 thumbnail blog, hero About, ilustrasi bean tambahan untuk wizard. Disimpan di `src/assets/`.
+## Data & RLS
 
-## Yang tidak dikerjakan di stage ini
+Tabel sudah ada (Stage 0). Migrasi tambahan kecil:
+- Index pada `cart_items(cart_id)`, `order_items(order_id)`, `notifications(user_id, is_read)`.
+- Helper SQL function `public.compute_order_totals(p_user uuid, p_coupon text, p_shipping_cost int)` (SECURITY DEFINER) untuk hitung subtotal + diskon + ongkir konsisten.
+- Storage policy `payment-proofs`: user hanya bisa upload/baca file di prefix `${auth.uid()}/...`.
+- Storage policy `review-photos`: user bisa upload di prefix `${auth.uid()}/...`, baca publik (signed URL via server fn untuk tampilan).
+- Tidak ada perubahan skema tabel.
 
-Keranjang, checkout, voucher, ongkir, upload bukti, tracking, notifikasi → **Stage 2**.
-Admin panel apapun → **Stage 3**.
-Subscription, loyalty redeem, forum, recipe, event → **Stage 4**.
+## UX & validation
 
-## Tech notes
+- Semua form Zod (alamat, voucher, qty, upload).
+- Toast Bahasa Indonesia hangat ("Pesananmu sudah masuk, tinggal transfer ya ☕").
+- Loading skeleton di cart, checkout summary, order detail.
+- Empty states: keranjang kosong, belum ada pesanan, belum ada notifikasi.
+- Error states: stok habis saat checkout, voucher invalid, upload gagal, total mismatch.
+- Optimistic update untuk qty cart & toggle wishlist.
+- Mobile-first responsive: checkout 1 kolom di mobile, 2 kolom (form + sticky summary) di desktop.
 
-- Tidak ada hardcoded hex di komponen — pakai CSS var atau token shadcn.
-- Semua copy + toast Bahasa Indonesia, tone hangat + edukatif.
-- Validasi form pakai Zod (trim, max length, email format).
-- Tombol cart/wishlist tampil aktif visual tapi menampilkan toast “Fitur aktif di tahap berikutnya” supaya UX tidak terasa broken sebelum Stage 2.
+## Routing baru
 
-Balas **"lanjut"** untuk mulai Stage 1, atau beri tahu jika ada halaman yang ingin diprioritaskan / dipangkas.
+```
+/keranjang                                 (sudah ada → diisi)
+/checkout
+/checkout/sukses/$orderNumber
+/_authenticated/akun/pesanan               (diisi)
+/_authenticated/akun/pesanan/$orderNumber
+/_authenticated/akun/pesanan/$orderNumber/bayar
+/_authenticated/akun/notifikasi
+```
+
+## Yang TIDAK dikerjakan stage ini
+
+- Admin verifikasi pembayaran, input resi, ubah status → **Stage 3**.
+- Email/WA notifikasi keluar → cukup in-app notifikasi dulu.
+- Refund flow lengkap → status `refund` ada, UI hanya read-only.
+- Subscription, loyalty redeem, forum, recipe, event → **Stage 4**.
+
+## Catatan teknis
+
+- Ongkir manual: user input estimasi, admin bisa adjust di Stage 3. Simpan `shipping_cost_estimated` & `shipping_cost_final` di `orders` (pakai kolom yang sudah ada).
+- Nomor unik transfer: simpan `unique_amount_suffix` (0-999) di `orders` agar verifikasi admin gampang.
+- Stok: decrement saat `createOrder`, restore saat `cancelOrder`.
+- Custom coffee item: `product_id` null, `meta jsonb` simpan konfigurasi, harga dihitung server-side dari formula (base + roast premium + grind).
+
+Balas **"lanjut"** untuk mulai eksekusi Stage 2, atau beri tahu jika ada bagian yang ingin dipangkas / diprioritaskan (mis. skip notifikasi dulu, atau skip review).
