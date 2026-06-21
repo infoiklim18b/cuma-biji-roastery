@@ -19,6 +19,7 @@ export const Route = createFileRoute("/_authenticated/akun/wishlist")({
 function WishlistPage() {
   const [userId, setUserId] = useState("");
   const qc = useQueryClient();
+  const navigate = useNavigate();
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? ""));
   }, []);
@@ -31,6 +32,20 @@ function WishlistPage() {
       return;
     }
     qc.invalidateQueries({ queryKey: ["wishlist", userId] });
+  }
+
+  async function moveToCart(p: { id: string; name: string; price: number; weight_g: number | null }, wishId: string) {
+    try {
+      await addProductToCart(userId, p, 1);
+      await supabase.from("wishlist").delete().eq("id", wishId);
+      qc.invalidateQueries({ queryKey: ["wishlist", userId] });
+      qc.invalidateQueries({ queryKey: ["cart", userId] });
+      toast.success("Dipindah ke keranjang", {
+        action: { label: "Lihat", onClick: () => navigate({ to: "/keranjang" }) },
+      });
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
   }
 
   const items = data ?? [];
