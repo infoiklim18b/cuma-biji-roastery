@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUserId } from "@/lib/use-user";
 import { formatIDR, formatDate } from "@/lib/format";
 
-export const Route = createFileRoute("/_authenticated/akun/pesanan/$orderNumber")({
+export const Route = createFileRoute("/_authenticated/akun/pesanan/$orderNumber/")({
   head: ({ params }) => ({ meta: [{ title: `${params.orderNumber} — Cuma Biji` }] }),
   loader: async ({ context, params }) => {
     const o = await context.queryClient.ensureQueryData(orderDetailQuery(params.orderNumber));
