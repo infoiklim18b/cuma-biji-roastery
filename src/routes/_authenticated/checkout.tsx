@@ -114,7 +114,7 @@ function CheckoutPage() {
     }
   }
 
-  if (items.length === 0) {
+  if (cart && items.length === 0) {
     return (
       <PublicLayout>
         <div className="container-editorial py-24 text-center">
