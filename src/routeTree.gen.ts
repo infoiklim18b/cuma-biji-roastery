@@ -30,13 +30,13 @@ import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AuthenticatedAkunRouteImport } from './routes/_authenticated/akun'
+import { Route as AuthenticatedPesananSuksesOrderNumberRouteImport } from './routes/_authenticated/pesanan-sukses.$orderNumber'
 import { Route as AuthenticatedAkunWishlistRouteImport } from './routes/_authenticated/akun.wishlist'
 import { Route as AuthenticatedAkunReviewRouteImport } from './routes/_authenticated/akun.review'
 import { Route as AuthenticatedAkunProfilRouteImport } from './routes/_authenticated/akun.profil'
 import { Route as AuthenticatedAkunPesananRouteImport } from './routes/_authenticated/akun.pesanan'
 import { Route as AuthenticatedAkunNotifikasiRouteImport } from './routes/_authenticated/akun.notifikasi'
 import { Route as AuthenticatedAkunAlamatRouteImport } from './routes/_authenticated/akun.alamat'
-import { Route as AuthenticatedCheckoutSuksesOrderNumberRouteImport } from './routes/_authenticated/checkout.sukses.$orderNumber'
 import { Route as AuthenticatedAkunPesananOrderNumberRouteImport } from './routes/_authenticated/akun.pesanan.$orderNumber'
 import { Route as AuthenticatedAkunPesananOrderNumberBayarRouteImport } from './routes/_authenticated/akun.pesanan.$orderNumber.bayar'
 
@@ -144,6 +144,12 @@ const AuthenticatedAkunRoute = AuthenticatedAkunRouteImport.update({
   path: '/akun',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPesananSuksesOrderNumberRoute =
+  AuthenticatedPesananSuksesOrderNumberRouteImport.update({
+    id: '/pesanan-sukses/$orderNumber',
+    path: '/pesanan-sukses/$orderNumber',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAkunWishlistRoute =
   AuthenticatedAkunWishlistRouteImport.update({
     id: '/wishlist',
@@ -177,12 +183,6 @@ const AuthenticatedAkunAlamatRoute = AuthenticatedAkunAlamatRouteImport.update({
   path: '/alamat',
   getParentRoute: () => AuthenticatedAkunRoute,
 } as any)
-const AuthenticatedCheckoutSuksesOrderNumberRoute =
-  AuthenticatedCheckoutSuksesOrderNumberRouteImport.update({
-    id: '/sukses/$orderNumber',
-    path: '/sukses/$orderNumber',
-    getParentRoute: () => AuthenticatedCheckoutRoute,
-  } as any)
 const AuthenticatedAkunPesananOrderNumberRoute =
   AuthenticatedAkunPesananOrderNumberRouteImport.update({
     id: '/$orderNumber',
@@ -213,7 +213,7 @@ export interface FileRoutesByFullPath {
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
   '/akun': typeof AuthenticatedAkunRouteWithChildren
-  '/checkout': typeof AuthenticatedCheckoutRouteWithChildren
+  '/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
@@ -223,8 +223,8 @@ export interface FileRoutesByFullPath {
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
+  '/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
   '/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberRouteWithChildren
-  '/checkout/sukses/$orderNumber': typeof AuthenticatedCheckoutSuksesOrderNumberRoute
   '/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
 }
 export interface FileRoutesByTo {
@@ -244,7 +244,7 @@ export interface FileRoutesByTo {
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
   '/akun': typeof AuthenticatedAkunRouteWithChildren
-  '/checkout': typeof AuthenticatedCheckoutRouteWithChildren
+  '/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
@@ -254,8 +254,8 @@ export interface FileRoutesByTo {
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
+  '/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
   '/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberRouteWithChildren
-  '/checkout/sukses/$orderNumber': typeof AuthenticatedCheckoutSuksesOrderNumberRoute
   '/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
 }
 export interface FileRoutesById {
@@ -277,7 +277,7 @@ export interface FileRoutesById {
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
   '/_authenticated/akun': typeof AuthenticatedAkunRouteWithChildren
-  '/_authenticated/checkout': typeof AuthenticatedCheckoutRouteWithChildren
+  '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
@@ -287,8 +287,8 @@ export interface FileRoutesById {
   '/_authenticated/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/_authenticated/akun/review': typeof AuthenticatedAkunReviewRoute
   '/_authenticated/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
+  '/_authenticated/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
   '/_authenticated/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberRouteWithChildren
-  '/_authenticated/checkout/sukses/$orderNumber': typeof AuthenticatedCheckoutSuksesOrderNumberRoute
   '/_authenticated/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
 }
 export interface FileRouteTypes {
@@ -320,8 +320,8 @@ export interface FileRouteTypes {
     | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
+    | '/pesanan-sukses/$orderNumber'
     | '/akun/pesanan/$orderNumber'
-    | '/checkout/sukses/$orderNumber'
     | '/akun/pesanan/$orderNumber/bayar'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -351,8 +351,8 @@ export interface FileRouteTypes {
     | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
+    | '/pesanan-sukses/$orderNumber'
     | '/akun/pesanan/$orderNumber'
-    | '/checkout/sukses/$orderNumber'
     | '/akun/pesanan/$orderNumber/bayar'
   id:
     | '__root__'
@@ -383,8 +383,8 @@ export interface FileRouteTypes {
     | '/_authenticated/akun/profil'
     | '/_authenticated/akun/review'
     | '/_authenticated/akun/wishlist'
+    | '/_authenticated/pesanan-sukses/$orderNumber'
     | '/_authenticated/akun/pesanan/$orderNumber'
-    | '/_authenticated/checkout/sukses/$orderNumber'
     | '/_authenticated/akun/pesanan/$orderNumber/bayar'
   fileRoutesById: FileRoutesById
 }
@@ -557,6 +557,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAkunRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pesanan-sukses/$orderNumber': {
+      id: '/_authenticated/pesanan-sukses/$orderNumber'
+      path: '/pesanan-sukses/$orderNumber'
+      fullPath: '/pesanan-sukses/$orderNumber'
+      preLoaderRoute: typeof AuthenticatedPesananSuksesOrderNumberRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/akun/wishlist': {
       id: '/_authenticated/akun/wishlist'
       path: '/wishlist'
@@ -598,13 +605,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/akun/alamat'
       preLoaderRoute: typeof AuthenticatedAkunAlamatRouteImport
       parentRoute: typeof AuthenticatedAkunRoute
-    }
-    '/_authenticated/checkout/sukses/$orderNumber': {
-      id: '/_authenticated/checkout/sukses/$orderNumber'
-      path: '/sukses/$orderNumber'
-      fullPath: '/checkout/sukses/$orderNumber'
-      preLoaderRoute: typeof AuthenticatedCheckoutSuksesOrderNumberRouteImport
-      parentRoute: typeof AuthenticatedCheckoutRoute
     }
     '/_authenticated/akun/pesanan/$orderNumber': {
       id: '/_authenticated/akun/pesanan/$orderNumber'
@@ -674,28 +674,17 @@ const AuthenticatedAkunRouteChildren: AuthenticatedAkunRouteChildren = {
 const AuthenticatedAkunRouteWithChildren =
   AuthenticatedAkunRoute._addFileChildren(AuthenticatedAkunRouteChildren)
 
-interface AuthenticatedCheckoutRouteChildren {
-  AuthenticatedCheckoutSuksesOrderNumberRoute: typeof AuthenticatedCheckoutSuksesOrderNumberRoute
-}
-
-const AuthenticatedCheckoutRouteChildren: AuthenticatedCheckoutRouteChildren = {
-  AuthenticatedCheckoutSuksesOrderNumberRoute:
-    AuthenticatedCheckoutSuksesOrderNumberRoute,
-}
-
-const AuthenticatedCheckoutRouteWithChildren =
-  AuthenticatedCheckoutRoute._addFileChildren(
-    AuthenticatedCheckoutRouteChildren,
-  )
-
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAkunRoute: typeof AuthenticatedAkunRouteWithChildren
-  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRouteWithChildren
+  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
+  AuthenticatedPesananSuksesOrderNumberRoute: typeof AuthenticatedPesananSuksesOrderNumberRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAkunRoute: AuthenticatedAkunRouteWithChildren,
-  AuthenticatedCheckoutRoute: AuthenticatedCheckoutRouteWithChildren,
+  AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
+  AuthenticatedPesananSuksesOrderNumberRoute:
+    AuthenticatedPesananSuksesOrderNumberRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

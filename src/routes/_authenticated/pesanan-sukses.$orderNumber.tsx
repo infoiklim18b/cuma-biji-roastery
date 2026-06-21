@@ -7,7 +7,7 @@ import { orderDetailQuery } from "@/lib/cart";
 import { BANKS } from "@/lib/cart";
 import { formatIDR } from "@/lib/format";
 
-export const Route = createFileRoute("/_authenticated/checkout/sukses/$orderNumber")({
+export const Route = createFileRoute("/_authenticated/pesanan-sukses/$orderNumber")({
   head: () => ({ meta: [{ title: "Pesanan dibuat — Cuma Biji" }] }),
   loader: async ({ context, params }) => {
     const data = await context.queryClient.ensureQueryData(orderDetailQuery(params.orderNumber));
