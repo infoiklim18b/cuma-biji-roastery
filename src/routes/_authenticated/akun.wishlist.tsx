@@ -1,12 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { ShoppingBag, Trash2 } from "lucide-react";
 import { AccountLayout } from "@/components/cuma/AccountLayout";
 import { EmptyState } from "@/components/cuma/EmptyState";
 import { wishlistQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
+import { addProductToCart } from "@/lib/cart";
 import { formatIDR } from "@/lib/format";
 import productBag from "@/assets/product-bag.jpg";
 
