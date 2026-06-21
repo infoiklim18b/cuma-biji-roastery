@@ -1,13 +1,17 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Heart, ShoppingBag, Share2, ChevronLeft } from "lucide-react";
+import { ShoppingBag, Share2, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { PublicLayout } from "@/components/cuma/PublicLayout";
 import { ProductCard, roastLabel, processLabel } from "@/components/cuma/ProductCard";
 import { Meter, RatingStars } from "@/components/cuma/RatingStars";
 import { EmptyState } from "@/components/cuma/EmptyState";
+import { WishlistButton } from "@/components/cuma/WishlistButton";
+import { QuantityStepper } from "@/components/cuma/QuantityStepper";
 import { productBySlugQuery, productsQuery, reviewsQuery } from "@/lib/queries";
+import { addProductToCart } from "@/lib/cart";
+import { useUserId } from "@/lib/use-user";
 import { formatIDR, formatDate } from "@/lib/format";
 import productBag from "@/assets/product-bag.jpg";
 
