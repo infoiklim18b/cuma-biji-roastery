@@ -1240,12 +1240,84 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cancel_my_order: {
+        Args: { p_order_id: string; p_reason?: string }
+        Returns: {
+          bank: Database["public"]["Enums"]["bank"]
+          cancel_reason: string | null
+          completed_at: string | null
+          courier: Database["public"]["Enums"]["courier"]
+          created_at: string
+          discount: number
+          id: string
+          note: string | null
+          order_number: string
+          paid_at: string | null
+          recipient_city: string
+          recipient_name: string
+          recipient_phone: string
+          recipient_postal_code: string
+          recipient_province: string
+          recipient_street: string
+          shipped_at: string | null
+          shipping_cost: number
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+          voucher_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      mark_order_received: {
+        Args: { p_order_id: string }
+        Returns: {
+          bank: Database["public"]["Enums"]["bank"]
+          cancel_reason: string | null
+          completed_at: string | null
+          courier: Database["public"]["Enums"]["courier"]
+          created_at: string
+          discount: number
+          id: string
+          note: string | null
+          order_number: string
+          paid_at: string | null
+          recipient_city: string
+          recipient_name: string
+          recipient_phone: string
+          recipient_postal_code: string
+          recipient_province: string
+          recipient_street: string
+          shipped_at: string | null
+          shipping_cost: number
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+          voucher_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
