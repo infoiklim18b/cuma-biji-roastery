@@ -36,6 +36,7 @@ import { Route as AuthenticatedAkunProfilRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAkunPesananRouteImport } from './routes/_authenticated/akun.pesanan'
 import { Route as AuthenticatedAkunAlamatRouteImport } from './routes/_authenticated/akun.alamat'
 import { Route as AuthenticatedCheckoutSuksesOrderNumberRouteImport } from './routes/_authenticated/checkout.sukses.$orderNumber'
+import { Route as AuthenticatedAkunPesananOrderNumberRouteImport } from './routes/_authenticated/akun.pesanan.$orderNumber'
 
 const TentangRoute = TentangRouteImport.update({
   id: '/tentang',
@@ -174,6 +175,12 @@ const AuthenticatedCheckoutSuksesOrderNumberRoute =
     path: '/sukses/$orderNumber',
     getParentRoute: () => AuthenticatedCheckoutRoute,
   } as any)
+const AuthenticatedAkunPesananOrderNumberRoute =
+  AuthenticatedAkunPesananOrderNumberRouteImport.update({
+    id: '/$orderNumber',
+    path: '/$orderNumber',
+    getParentRoute: () => AuthenticatedAkunPesananRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -197,10 +204,11 @@ export interface FileRoutesByFullPath {
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
-  '/akun/pesanan': typeof AuthenticatedAkunPesananRoute
+  '/akun/pesanan': typeof AuthenticatedAkunPesananRouteWithChildren
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
+  '/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberRoute
   '/checkout/sukses/$orderNumber': typeof AuthenticatedCheckoutSuksesOrderNumberRoute
 }
 export interface FileRoutesByTo {
@@ -225,10 +233,11 @@ export interface FileRoutesByTo {
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
-  '/akun/pesanan': typeof AuthenticatedAkunPesananRoute
+  '/akun/pesanan': typeof AuthenticatedAkunPesananRouteWithChildren
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
+  '/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberRoute
   '/checkout/sukses/$orderNumber': typeof AuthenticatedCheckoutSuksesOrderNumberRoute
 }
 export interface FileRoutesById {
@@ -255,10 +264,11 @@ export interface FileRoutesById {
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/_authenticated/akun/alamat': typeof AuthenticatedAkunAlamatRoute
-  '/_authenticated/akun/pesanan': typeof AuthenticatedAkunPesananRoute
+  '/_authenticated/akun/pesanan': typeof AuthenticatedAkunPesananRouteWithChildren
   '/_authenticated/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/_authenticated/akun/review': typeof AuthenticatedAkunReviewRoute
   '/_authenticated/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
+  '/_authenticated/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberRoute
   '/_authenticated/checkout/sukses/$orderNumber': typeof AuthenticatedCheckoutSuksesOrderNumberRoute
 }
 export interface FileRouteTypes {
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
+    | '/akun/pesanan/$orderNumber'
     | '/checkout/sukses/$orderNumber'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
+    | '/akun/pesanan/$orderNumber'
     | '/checkout/sukses/$orderNumber'
   id:
     | '__root__'
@@ -346,6 +358,7 @@ export interface FileRouteTypes {
     | '/_authenticated/akun/profil'
     | '/_authenticated/akun/review'
     | '/_authenticated/akun/wishlist'
+    | '/_authenticated/akun/pesanan/$orderNumber'
     | '/_authenticated/checkout/sukses/$orderNumber'
   fileRoutesById: FileRoutesById
 }
@@ -560,12 +573,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCheckoutSuksesOrderNumberRouteImport
       parentRoute: typeof AuthenticatedCheckoutRoute
     }
+    '/_authenticated/akun/pesanan/$orderNumber': {
+      id: '/_authenticated/akun/pesanan/$orderNumber'
+      path: '/$orderNumber'
+      fullPath: '/akun/pesanan/$orderNumber'
+      preLoaderRoute: typeof AuthenticatedAkunPesananOrderNumberRouteImport
+      parentRoute: typeof AuthenticatedAkunPesananRoute
+    }
   }
 }
 
+interface AuthenticatedAkunPesananRouteChildren {
+  AuthenticatedAkunPesananOrderNumberRoute: typeof AuthenticatedAkunPesananOrderNumberRoute
+}
+
+const AuthenticatedAkunPesananRouteChildren: AuthenticatedAkunPesananRouteChildren =
+  {
+    AuthenticatedAkunPesananOrderNumberRoute:
+      AuthenticatedAkunPesananOrderNumberRoute,
+  }
+
+const AuthenticatedAkunPesananRouteWithChildren =
+  AuthenticatedAkunPesananRoute._addFileChildren(
+    AuthenticatedAkunPesananRouteChildren,
+  )
+
 interface AuthenticatedAkunRouteChildren {
   AuthenticatedAkunAlamatRoute: typeof AuthenticatedAkunAlamatRoute
-  AuthenticatedAkunPesananRoute: typeof AuthenticatedAkunPesananRoute
+  AuthenticatedAkunPesananRoute: typeof AuthenticatedAkunPesananRouteWithChildren
   AuthenticatedAkunProfilRoute: typeof AuthenticatedAkunProfilRoute
   AuthenticatedAkunReviewRoute: typeof AuthenticatedAkunReviewRoute
   AuthenticatedAkunWishlistRoute: typeof AuthenticatedAkunWishlistRoute
@@ -573,7 +608,7 @@ interface AuthenticatedAkunRouteChildren {
 
 const AuthenticatedAkunRouteChildren: AuthenticatedAkunRouteChildren = {
   AuthenticatedAkunAlamatRoute: AuthenticatedAkunAlamatRoute,
-  AuthenticatedAkunPesananRoute: AuthenticatedAkunPesananRoute,
+  AuthenticatedAkunPesananRoute: AuthenticatedAkunPesananRouteWithChildren,
   AuthenticatedAkunProfilRoute: AuthenticatedAkunProfilRoute,
   AuthenticatedAkunReviewRoute: AuthenticatedAkunReviewRoute,
   AuthenticatedAkunWishlistRoute: AuthenticatedAkunWishlistRoute,
