@@ -1319,6 +1319,49 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      place_order: {
+        Args: {
+          p_address_id: string
+          p_bank: Database["public"]["Enums"]["bank"]
+          p_courier: Database["public"]["Enums"]["courier"]
+          p_note: string
+          p_shipping_cost: number
+          p_voucher_code: string
+        }
+        Returns: {
+          bank: Database["public"]["Enums"]["bank"]
+          cancel_reason: string | null
+          completed_at: string | null
+          courier: Database["public"]["Enums"]["courier"]
+          created_at: string
+          discount: number
+          id: string
+          note: string | null
+          order_number: string
+          paid_at: string | null
+          recipient_city: string
+          recipient_name: string
+          recipient_phone: string
+          recipient_postal_code: string
+          recipient_province: string
+          recipient_street: string
+          shipped_at: string | null
+          shipping_cost: number
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+          voucher_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role: "customer" | "admin"
