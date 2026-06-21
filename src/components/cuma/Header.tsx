@@ -22,9 +22,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const { userId } = useUserId();
   const navigate = useNavigate();
-  const [signedIn, setSignedIn] = useState(false);
-
-  useEffect(() => setSignedIn(!!userId), [userId]);
+  const signedIn = !!userId;
 
   const { data: cart } = useQuery({ ...cartQuery(userId), enabled: !!userId });
   const cartCount = cart?.items.reduce((s, i) => s + i.qty, 0) ?? 0;
