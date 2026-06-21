@@ -94,14 +94,33 @@ function WishlistPage() {
                   {formatIDR(w.products.price)}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => handleRemove(w.id)}
-                title="Hapus"
-                className="rounded-full p-2 text-[color:var(--destructive)] hover:bg-[color:var(--secondary)]"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
+              <div className="flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    moveToCart(
+                      {
+                        id: w.products.id,
+                        name: w.products.name,
+                        price: w.products.price,
+                        weight_g: w.products.weight_g,
+                      },
+                      w.id,
+                    )
+                  }
+                  className="inline-flex items-center gap-1 rounded-full bg-[color:var(--coffee)] px-3 py-1.5 text-xs text-[color:var(--cream)]"
+                >
+                  <ShoppingBag className="h-3 w-3" /> Ke keranjang
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRemove(w.id)}
+                  title="Hapus"
+                  className="rounded-full p-2 text-[color:var(--destructive)] hover:bg-[color:var(--secondary)]"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
             </article>
           ))}
         </div>
