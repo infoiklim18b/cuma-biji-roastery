@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Menu, ShoppingBag, User, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Logo } from "./Logo";
