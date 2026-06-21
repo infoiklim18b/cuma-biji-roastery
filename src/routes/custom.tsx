@@ -1,11 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useReducer } from "react";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { PublicLayout } from "@/components/cuma/PublicLayout";
 import { PageHero } from "@/components/cuma/PageHero";
 import { originsQuery } from "@/lib/queries";
+import { addCustomToCart, type Grind } from "@/lib/cart";
+import { useUserId } from "@/lib/use-user";
 import { formatIDR } from "@/lib/format";
 
 export const Route = createFileRoute("/custom")({
