@@ -65,6 +65,10 @@ function ProductDetailPage() {
     }),
   );
   const [activeImg, setActiveImg] = useState(0);
+  const [qty, setQty] = useState(1);
+  const { userId } = useUserId();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
 
   if (!product) return null;
 
@@ -87,9 +91,28 @@ function ProductDetailPage() {
 
   const relatedProducts = (related ?? []).filter((p) => p.slug !== slug).slice(0, 4);
 
-  function notYet() {
-    toast.info("Fitur keranjang aktif di tahap berikutnya.");
+  async function handleAddToCart() {
+    if (!product) return;
+    if (!userId) {
+      toast.info("Masuk dulu untuk menambah ke keranjang.");
+      navigate({ to: "/auth" });
+      return;
+    }
+    try {
+      await addProductToCart(
+        userId,
+        { id: product.id, name: product.name, price: product.price, weight_g: product.weight_g },
+        qty,
+      );
+      qc.invalidateQueries({ queryKey: ["cart", userId] });
+      toast.success("Ditambahkan ke keranjang", {
+        action: { label: "Lihat", onClick: () => navigate({ to: "/keranjang" }) },
+      });
+    } catch (err) {
+      toast.error((err as Error).message);
+    }
   }
+
 
   return (
     <PublicLayout>
