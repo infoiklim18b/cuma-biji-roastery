@@ -101,5 +101,3 @@ export function Header() {
   );
 }
 
-// Re-export so legacy unused import warnings stay quiet
-export { supabase };
