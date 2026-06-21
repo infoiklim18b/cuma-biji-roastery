@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/akun/pesanan/$orderNumber/
   ),
 });
 
-type Order = NonNullable<ReturnType<typeof useQuery<typeof orderDetailQuery>>["data"]> extends infer T ? T : never;
+
 
 function OrderDetailPage() {
   const { orderNumber } = Route.useParams();
