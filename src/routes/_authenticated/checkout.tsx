@@ -106,7 +106,7 @@ function CheckoutPage() {
       qc.invalidateQueries({ queryKey: ["cart", userId] });
       qc.invalidateQueries({ queryKey: ["orders", userId] });
       toast.success("Pesananmu sudah masuk ☕");
-      navigate({ to: "/checkout/sukses/$orderNumber", params: { orderNumber: order.order_number } });
+      navigate({ to: "/pesanan-sukses/$orderNumber", params: { orderNumber: order.order_number } });
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
