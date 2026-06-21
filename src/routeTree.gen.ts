@@ -34,9 +34,9 @@ import { Route as AuthenticatedPesananSuksesOrderNumberRouteImport } from './rou
 import { Route as AuthenticatedAkunWishlistRouteImport } from './routes/_authenticated/akun.wishlist'
 import { Route as AuthenticatedAkunReviewRouteImport } from './routes/_authenticated/akun.review'
 import { Route as AuthenticatedAkunProfilRouteImport } from './routes/_authenticated/akun.profil'
-import { Route as AuthenticatedAkunPesananRouteImport } from './routes/_authenticated/akun.pesanan'
 import { Route as AuthenticatedAkunNotifikasiRouteImport } from './routes/_authenticated/akun.notifikasi'
 import { Route as AuthenticatedAkunAlamatRouteImport } from './routes/_authenticated/akun.alamat'
+import { Route as AuthenticatedAkunPesananIndexRouteImport } from './routes/_authenticated/akun.pesanan.index'
 import { Route as AuthenticatedAkunPesananOrderNumberRouteImport } from './routes/_authenticated/akun.pesanan.$orderNumber'
 import { Route as AuthenticatedAkunPesananOrderNumberBayarRouteImport } from './routes/_authenticated/akun.pesanan.$orderNumber.bayar'
 
@@ -166,12 +166,6 @@ const AuthenticatedAkunProfilRoute = AuthenticatedAkunProfilRouteImport.update({
   path: '/profil',
   getParentRoute: () => AuthenticatedAkunRoute,
 } as any)
-const AuthenticatedAkunPesananRoute =
-  AuthenticatedAkunPesananRouteImport.update({
-    id: '/pesanan',
-    path: '/pesanan',
-    getParentRoute: () => AuthenticatedAkunRoute,
-  } as any)
 const AuthenticatedAkunNotifikasiRoute =
   AuthenticatedAkunNotifikasiRouteImport.update({
     id: '/notifikasi',
@@ -183,11 +177,17 @@ const AuthenticatedAkunAlamatRoute = AuthenticatedAkunAlamatRouteImport.update({
   path: '/alamat',
   getParentRoute: () => AuthenticatedAkunRoute,
 } as any)
+const AuthenticatedAkunPesananIndexRoute =
+  AuthenticatedAkunPesananIndexRouteImport.update({
+    id: '/pesanan/',
+    path: '/pesanan/',
+    getParentRoute: () => AuthenticatedAkunRoute,
+  } as any)
 const AuthenticatedAkunPesananOrderNumberRoute =
   AuthenticatedAkunPesananOrderNumberRouteImport.update({
-    id: '/$orderNumber',
-    path: '/$orderNumber',
-    getParentRoute: () => AuthenticatedAkunPesananRoute,
+    id: '/pesanan/$orderNumber',
+    path: '/pesanan/$orderNumber',
+    getParentRoute: () => AuthenticatedAkunRoute,
   } as any)
 const AuthenticatedAkunPesananOrderNumberBayarRoute =
   AuthenticatedAkunPesananOrderNumberBayarRouteImport.update({
@@ -219,12 +219,12 @@ export interface FileRoutesByFullPath {
   '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
   '/akun/notifikasi': typeof AuthenticatedAkunNotifikasiRoute
-  '/akun/pesanan': typeof AuthenticatedAkunPesananRouteWithChildren
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
   '/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
   '/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberRouteWithChildren
+  '/akun/pesanan/': typeof AuthenticatedAkunPesananIndexRoute
   '/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
 }
 export interface FileRoutesByTo {
@@ -250,12 +250,12 @@ export interface FileRoutesByTo {
   '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
   '/akun/notifikasi': typeof AuthenticatedAkunNotifikasiRoute
-  '/akun/pesanan': typeof AuthenticatedAkunPesananRouteWithChildren
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
   '/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
   '/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberRouteWithChildren
+  '/akun/pesanan': typeof AuthenticatedAkunPesananIndexRoute
   '/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
 }
 export interface FileRoutesById {
@@ -283,12 +283,12 @@ export interface FileRoutesById {
   '/single-origin/$slug': typeof SingleOriginSlugRoute
   '/_authenticated/akun/alamat': typeof AuthenticatedAkunAlamatRoute
   '/_authenticated/akun/notifikasi': typeof AuthenticatedAkunNotifikasiRoute
-  '/_authenticated/akun/pesanan': typeof AuthenticatedAkunPesananRouteWithChildren
   '/_authenticated/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/_authenticated/akun/review': typeof AuthenticatedAkunReviewRoute
   '/_authenticated/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
   '/_authenticated/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
   '/_authenticated/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberRouteWithChildren
+  '/_authenticated/akun/pesanan/': typeof AuthenticatedAkunPesananIndexRoute
   '/_authenticated/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
 }
 export interface FileRouteTypes {
@@ -316,12 +316,12 @@ export interface FileRouteTypes {
     | '/single-origin/$slug'
     | '/akun/alamat'
     | '/akun/notifikasi'
-    | '/akun/pesanan'
     | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
     | '/pesanan-sukses/$orderNumber'
     | '/akun/pesanan/$orderNumber'
+    | '/akun/pesanan/'
     | '/akun/pesanan/$orderNumber/bayar'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -347,12 +347,12 @@ export interface FileRouteTypes {
     | '/single-origin/$slug'
     | '/akun/alamat'
     | '/akun/notifikasi'
-    | '/akun/pesanan'
     | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
     | '/pesanan-sukses/$orderNumber'
     | '/akun/pesanan/$orderNumber'
+    | '/akun/pesanan'
     | '/akun/pesanan/$orderNumber/bayar'
   id:
     | '__root__'
@@ -379,12 +379,12 @@ export interface FileRouteTypes {
     | '/single-origin/$slug'
     | '/_authenticated/akun/alamat'
     | '/_authenticated/akun/notifikasi'
-    | '/_authenticated/akun/pesanan'
     | '/_authenticated/akun/profil'
     | '/_authenticated/akun/review'
     | '/_authenticated/akun/wishlist'
     | '/_authenticated/pesanan-sukses/$orderNumber'
     | '/_authenticated/akun/pesanan/$orderNumber'
+    | '/_authenticated/akun/pesanan/'
     | '/_authenticated/akun/pesanan/$orderNumber/bayar'
   fileRoutesById: FileRoutesById
 }
@@ -585,13 +585,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAkunProfilRouteImport
       parentRoute: typeof AuthenticatedAkunRoute
     }
-    '/_authenticated/akun/pesanan': {
-      id: '/_authenticated/akun/pesanan'
-      path: '/pesanan'
-      fullPath: '/akun/pesanan'
-      preLoaderRoute: typeof AuthenticatedAkunPesananRouteImport
-      parentRoute: typeof AuthenticatedAkunRoute
-    }
     '/_authenticated/akun/notifikasi': {
       id: '/_authenticated/akun/notifikasi'
       path: '/notifikasi'
@@ -606,12 +599,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAkunAlamatRouteImport
       parentRoute: typeof AuthenticatedAkunRoute
     }
+    '/_authenticated/akun/pesanan/': {
+      id: '/_authenticated/akun/pesanan/'
+      path: '/pesanan'
+      fullPath: '/akun/pesanan/'
+      preLoaderRoute: typeof AuthenticatedAkunPesananIndexRouteImport
+      parentRoute: typeof AuthenticatedAkunRoute
+    }
     '/_authenticated/akun/pesanan/$orderNumber': {
       id: '/_authenticated/akun/pesanan/$orderNumber'
-      path: '/$orderNumber'
+      path: '/pesanan/$orderNumber'
       fullPath: '/akun/pesanan/$orderNumber'
       preLoaderRoute: typeof AuthenticatedAkunPesananOrderNumberRouteImport
-      parentRoute: typeof AuthenticatedAkunPesananRoute
+      parentRoute: typeof AuthenticatedAkunRoute
     }
     '/_authenticated/akun/pesanan/$orderNumber/bayar': {
       id: '/_authenticated/akun/pesanan/$orderNumber/bayar'
@@ -638,37 +638,25 @@ const AuthenticatedAkunPesananOrderNumberRouteWithChildren =
     AuthenticatedAkunPesananOrderNumberRouteChildren,
   )
 
-interface AuthenticatedAkunPesananRouteChildren {
-  AuthenticatedAkunPesananOrderNumberRoute: typeof AuthenticatedAkunPesananOrderNumberRouteWithChildren
-}
-
-const AuthenticatedAkunPesananRouteChildren: AuthenticatedAkunPesananRouteChildren =
-  {
-    AuthenticatedAkunPesananOrderNumberRoute:
-      AuthenticatedAkunPesananOrderNumberRouteWithChildren,
-  }
-
-const AuthenticatedAkunPesananRouteWithChildren =
-  AuthenticatedAkunPesananRoute._addFileChildren(
-    AuthenticatedAkunPesananRouteChildren,
-  )
-
 interface AuthenticatedAkunRouteChildren {
   AuthenticatedAkunAlamatRoute: typeof AuthenticatedAkunAlamatRoute
   AuthenticatedAkunNotifikasiRoute: typeof AuthenticatedAkunNotifikasiRoute
-  AuthenticatedAkunPesananRoute: typeof AuthenticatedAkunPesananRouteWithChildren
   AuthenticatedAkunProfilRoute: typeof AuthenticatedAkunProfilRoute
   AuthenticatedAkunReviewRoute: typeof AuthenticatedAkunReviewRoute
   AuthenticatedAkunWishlistRoute: typeof AuthenticatedAkunWishlistRoute
+  AuthenticatedAkunPesananOrderNumberRoute: typeof AuthenticatedAkunPesananOrderNumberRouteWithChildren
+  AuthenticatedAkunPesananIndexRoute: typeof AuthenticatedAkunPesananIndexRoute
 }
 
 const AuthenticatedAkunRouteChildren: AuthenticatedAkunRouteChildren = {
   AuthenticatedAkunAlamatRoute: AuthenticatedAkunAlamatRoute,
   AuthenticatedAkunNotifikasiRoute: AuthenticatedAkunNotifikasiRoute,
-  AuthenticatedAkunPesananRoute: AuthenticatedAkunPesananRouteWithChildren,
   AuthenticatedAkunProfilRoute: AuthenticatedAkunProfilRoute,
   AuthenticatedAkunReviewRoute: AuthenticatedAkunReviewRoute,
   AuthenticatedAkunWishlistRoute: AuthenticatedAkunWishlistRoute,
+  AuthenticatedAkunPesananOrderNumberRoute:
+    AuthenticatedAkunPesananOrderNumberRouteWithChildren,
+  AuthenticatedAkunPesananIndexRoute: AuthenticatedAkunPesananIndexRoute,
 }
 
 const AuthenticatedAkunRouteWithChildren =

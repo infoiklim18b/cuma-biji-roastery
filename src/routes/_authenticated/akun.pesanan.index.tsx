@@ -9,7 +9,7 @@ import type { OrderStatus } from "@/lib/cart";
 import { useUserId } from "@/lib/use-user";
 import { formatIDR, formatDate } from "@/lib/format";
 
-export const Route = createFileRoute("/_authenticated/akun/pesanan")({
+export const Route = createFileRoute("/_authenticated/akun/pesanan/")({
   head: () => ({ meta: [{ title: "Pesanan saya — Cuma Biji" }] }),
   component: OrdersPage,
 });
