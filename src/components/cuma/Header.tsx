@@ -4,7 +4,7 @@ import { Menu, ShoppingBag, User, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Logo } from "./Logo";
 import { NotificationBell } from "./NotificationBell";
-import { supabase } from "@/integrations/supabase/client";
+
 import { cartQuery } from "@/lib/cart";
 import { useUserId } from "@/lib/use-user";
 
