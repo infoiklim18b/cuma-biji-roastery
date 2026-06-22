@@ -100,7 +100,7 @@ export function BlogFields({
             </Select>
           </Field>
           <Field label="Thumbnail URL"><Input value={(v.thumbnail as string) ?? ""} onChange={(e) => upd("thumbnail", e.target.value)} /></Field>
-          {v.thumbnail && <img src={v.thumbnail as string} alt="" className="rounded-md w-full" />}
+          {v.thumbnail ? <img src={v.thumbnail as string} alt="" className="rounded-md w-full" /> : null}
         </div>
       </div>
     </div>
