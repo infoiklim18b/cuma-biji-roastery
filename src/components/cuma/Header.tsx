@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, ShoppingBag, User, X } from "lucide-react";
+import { Menu, ShoppingBag, User, X, Shield } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Logo } from "./Logo";
 import { NotificationBell } from "./NotificationBell";
 
 import { cartQuery } from "@/lib/cart";
 import { useUserId } from "@/lib/use-user";
+import { isAdminQuery } from "@/lib/admin";
 
 const nav = [
   { to: "/shop", label: "Shop" },
@@ -25,6 +26,7 @@ export function Header() {
   const signedIn = !!userId;
 
   const { data: cart } = useQuery({ ...cartQuery(userId), enabled: !!userId });
+  const { data: isAdmin } = useQuery({ ...isAdminQuery(userId), enabled: !!userId });
   const cartCount = cart?.items.reduce((s, i) => s + i.qty, 0) ?? 0;
 
   return (
@@ -44,6 +46,14 @@ export function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-1">
+          {signedIn && isAdmin && (
+            <Link
+              to="/admin"
+              className="hidden md:inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs bg-[color:var(--coffee)] text-[color:var(--cream)] hover:opacity-90"
+            >
+              <Shield className="h-3.5 w-3.5" /> Admin
+            </Link>
+          )}
           {signedIn && <NotificationBell />}
           <Link
             to={signedIn ? "/akun" : "/auth"}
