@@ -63,7 +63,7 @@ function AdminOrderDetail() {
   }
 
   const payment = order.payments?.[0];
-  const shipment = order.shipments?.[0];
+  const shipment = order.shipments;
   const proofUrl = payment?.proof_url;
 
   async function viewProof() {
@@ -165,9 +165,9 @@ function AdminOrderDetail() {
                 </div>
                 <Row label="Bank" value={payment.bank.toUpperCase()} />
                 <Row label="Nominal" value={formatIDR(payment.amount)} />
-                {payment.admin_note && (
+                {payment.reject_reason && (
                   <p className="text-xs text-[color:var(--muted-foreground)]">
-                    Catatan: {payment.admin_note}
+                    Catatan: {payment.reject_reason}
                   </p>
                 )}
                 {proofUrl ? (
