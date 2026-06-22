@@ -30,6 +30,7 @@ import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AuthenticatedAkunRouteImport } from './routes/_authenticated/akun'
+import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedPesananSuksesOrderNumberRouteImport } from './routes/_authenticated/pesanan-sukses.$orderNumber'
 import { Route as AuthenticatedAkunWishlistRouteImport } from './routes/_authenticated/akun.wishlist'
 import { Route as AuthenticatedAkunReviewRouteImport } from './routes/_authenticated/akun.review'
@@ -144,6 +145,11 @@ const AuthenticatedAkunRoute = AuthenticatedAkunRouteImport.update({
   path: '/akun',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPesananSuksesOrderNumberRoute =
   AuthenticatedPesananSuksesOrderNumberRouteImport.update({
     id: '/pesanan-sukses/$orderNumber',
@@ -212,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/single-origin': typeof SingleOriginRouteWithChildren
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
+  '/admin': typeof AuthenticatedAdminRouteRoute
   '/akun': typeof AuthenticatedAkunRouteWithChildren
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -243,6 +250,7 @@ export interface FileRoutesByTo {
   '/single-origin': typeof SingleOriginRouteWithChildren
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
+  '/admin': typeof AuthenticatedAdminRouteRoute
   '/akun': typeof AuthenticatedAkunRouteWithChildren
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -276,6 +284,7 @@ export interface FileRoutesById {
   '/single-origin': typeof SingleOriginRouteWithChildren
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRoute
   '/_authenticated/akun': typeof AuthenticatedAkunRouteWithChildren
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -309,6 +318,7 @@ export interface FileRouteTypes {
     | '/single-origin'
     | '/syarat'
     | '/tentang'
+    | '/admin'
     | '/akun'
     | '/checkout'
     | '/blog/$slug'
@@ -340,6 +350,7 @@ export interface FileRouteTypes {
     | '/single-origin'
     | '/syarat'
     | '/tentang'
+    | '/admin'
     | '/akun'
     | '/checkout'
     | '/blog/$slug'
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/single-origin'
     | '/syarat'
     | '/tentang'
+    | '/_authenticated/admin'
     | '/_authenticated/akun'
     | '/_authenticated/checkout'
     | '/blog/$slug'
@@ -557,6 +569,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAkunRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pesanan-sukses/$orderNumber': {
       id: '/_authenticated/pesanan-sukses/$orderNumber'
       path: '/pesanan-sukses/$orderNumber'
@@ -651,12 +670,14 @@ const AuthenticatedAkunRouteWithChildren =
   AuthenticatedAkunRoute._addFileChildren(AuthenticatedAkunRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRoute
   AuthenticatedAkunRoute: typeof AuthenticatedAkunRouteWithChildren
   AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
   AuthenticatedPesananSuksesOrderNumberRoute: typeof AuthenticatedPesananSuksesOrderNumberRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRoute,
   AuthenticatedAkunRoute: AuthenticatedAkunRouteWithChildren,
   AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
   AuthenticatedPesananSuksesOrderNumberRoute:

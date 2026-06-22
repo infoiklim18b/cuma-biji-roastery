@@ -19,7 +19,13 @@ import { Logo } from "@/components/cuma/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
 
-const nav = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+};
+const nav: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/pesanan", label: "Pesanan", icon: ShoppingCart },
   { to: "/admin/pembayaran", label: "Pembayaran", icon: CreditCard },
@@ -31,7 +37,7 @@ const nav = [
   { to: "/admin/pelanggan", label: "Pelanggan", icon: Users },
   { to: "/admin/ulasan", label: "Ulasan", icon: Star },
   { to: "/admin/pengaturan", label: "Pengaturan", icon: Settings },
-] as const;
+];
 
 export function AdminLayout({ title, children }: { title: string; children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
