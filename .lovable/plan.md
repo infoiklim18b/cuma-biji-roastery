@@ -1,84 +1,94 @@
-# Stage 2 — Keranjang, Checkout, Pembayaran, Tracking, Notifikasi
+# Stage 3 — Admin Dashboard
 
-Stage 0 (infra + auth) dan Stage 1 (katalog publik + akun shell) sudah live. Stage ini menyalakan seluruh alur transaksi end-to-end dengan **manual bank transfer + manual ongkir**, plus pusat notifikasi user. Belum menyentuh admin (Stage 3) maupun loyalty/subscription/forum (Stage 4).
+Stage 0–2 sudah live (infra, katalog, transaksi end-to-end customer). Stage ini membangun **Admin Dashboard** untuk operasional Cuma Biji: verifikasi pembayaran, proses pesanan, input resi, kelola produk/blog/voucher, dan dashboard metrik. Belum menyentuh loyalty/subscription/forum (Stage 4).
 
-## Alur yang dibangun
+## Akses & guard
 
-1. **Keranjang `/keranjang`** — cart user (`cart` + `cart_items`), qty +/-, hapus, sub-total, badge "stok tersisa", kosong → empty state CTA ke `/shop`. Mini-cart drawer di Header (icon shopping bag → Sheet) tampil di semua halaman, sync via TanStack Query invalidation.
-2. **Tambah ke keranjang** — `ProductCard`, `produk/$slug`, dan **Custom Wizard** sekarang benar-benar menulis `cart_items` (untuk custom: simpan konfigurasi origin/roast/berat/grind di kolom `meta jsonb` + `product_kind='custom'`). Toast sukses + tombol "Lihat keranjang".
-3. **Checkout `/checkout`** — 3 langkah dalam satu halaman (stepper):
-   - **Alamat** — pilih dari `addresses` atau tambah baru (reuse `AddressForm`).
-   - **Pengiriman** — pilih kurir (JNE/JNT/SiCepat/Anteraja) + service level + **manual ongkir** (input nominal oleh user dari kalkulator estimasi sederhana berbasis berat & zona → tampil sebagai estimasi, dikonfirmasi admin nanti). Plus voucher (`WELCOME10`, `GRATISONGKIR`) via `coupons` + `coupon_redemptions` dengan validasi server-side.
-   - **Pembayaran** — pilih bank tujuan (BCA/Mandiri/BNI/BRI) dari konstanta rekening Cuma Biji, ringkasan order, tombol **Buat Pesanan**.
-   Submit memanggil `createOrder` server fn (`requireSupabaseAuth`) yang dalam satu transaksi: hitung ulang harga & diskon di server (jangan percaya client), kunci stok, buat `orders` (trigger auto-generate `CBJ-YYYY-NNNNNN`), `order_items` snapshot, `payments` (status `menunggu`), `shipments` draft, increment `coupon_redemptions`, kosongkan `cart_items`, kirim `notifications` "Pesanan dibuat".
-4. **Order Confirmation `/checkout/sukses/$orderNumber`** — instruksi transfer (bank, no rek, atas nama, nominal **unik** = total + 3 digit random untuk memudahkan verifikasi), countdown 24 jam, tombol "Upload bukti transfer".
-5. **Upload bukti `/akun/pesanan/$orderNumber/bayar`** — upload ke bucket `payment-proofs` (path `${userId}/${orderId}/...`), update `payments.proof_url` + status `menunggu_verifikasi`, update `orders.status` → `menunggu_verifikasi`, kirim notifikasi.
-6. **Detail pesanan `/akun/pesanan/$orderNumber`** — timeline status (menunggu_pembayaran → menunggu_verifikasi → diproses → dikirim → selesai), ringkasan item, alamat, total, info pembayaran, info pengiriman (kurir + resi bila ada), tombol **Tandai diterima** saat status `dikirim`, tombol **Batalkan** saat masih `menunggu_pembayaran`.
-7. **Daftar pesanan `/akun/pesanan`** — list real dari DB, filter status, search by order_number, pagination.
-8. **Review produk** — di detail order ber-status `selesai`, tombol **Tulis ulasan** per item → modal dengan rating 1-5 + body + upload foto opsional ke `review-photos`. `/akun/review` menampilkan review yang sudah & belum ditulis.
-9. **Wishlist** — tombol heart di `ProductCard` dan `/produk/$slug` sekarang aktif (insert/delete `wishlist`). `/akun/wishlist` sudah ada datanya, tambah tombol "Pindah ke keranjang".
-10. **Notifikasi** — dropdown bell di Header (badge unread count), pull dari `notifications`, klik → tandai read + navigate ke target (`/akun/pesanan/...`). Halaman penuh `/akun/notifikasi`.
+- Role `admin` sudah ada di enum `app_role` + tabel `user_roles` (Stage 0).
+- Layout baru `src/routes/_authenticated/admin/route.tsx` — child gate: cek `has_role(auth.uid(), 'admin')`. Bukan admin → redirect ke `/akun` + toast.
+- Sidebar admin pakai shadcn `Sidebar` (collapsible icon), header tipis dengan search + notif + akun.
+- Seed: 1 user admin awal via migrasi (grant role admin ke email yang user tentukan — akan ditanyakan saat eksekusi, atau dibuat helper RPC `promote_to_admin` yang hanya bisa dipanggil sekali bila belum ada admin).
+
+## Halaman admin
+
+```
+/admin                         Dashboard ringkasan
+/admin/pesanan                 List semua orders (filter status, search, tanggal)
+/admin/pesanan/$orderNumber    Detail + aksi (verifikasi bayar, input resi, ubah status, refund)
+/admin/pembayaran              Queue pembayaran menunggu verifikasi
+/admin/produk                  Tabel produk + CRUD
+/admin/produk/baru             Form create
+/admin/produk/$id              Form edit (gambar, stok, harga, publish toggle)
+/admin/origins                 CRUD origin
+/admin/kategori                CRUD kategori
+/admin/blog                    List blog + CRUD
+/admin/blog/baru, /admin/blog/$id
+/admin/voucher                 CRUD coupons
+/admin/pelanggan               List user + detail (orders, total spend, role)
+/admin/ulasan                  Moderasi reviews (approve / hapus)
+/admin/pengaturan              Rekening bank, info toko, ongkir default
+```
+
+## Server functions (`src/lib/admin.*.functions.ts`)
+
+Semua pakai `requireSupabaseAuth` + cek `has_role(userId,'admin')` di awal handler — kalau bukan admin, throw 403. Return DTO plain.
+
+- `admin.orders.functions.ts`: `listOrders`, `getOrderDetail`, `verifyPayment` (approve/reject bukti), `setShipment` (kurir+resi, status→`dikirim`, kirim notif), `setOrderStatus`, `refundOrder`, `adjustShippingCost`.
+- `admin.products.functions.ts`: `listProducts`, `upsertProduct`, `deleteProduct`, `uploadProductImage` (ke bucket `product-images`), `reorderImages`.
+- `admin.taxonomy.functions.ts`: CRUD `origins`, `categories`.
+- `admin.blog.functions.ts`: CRUD `blogs` + `blog_categories`, upload thumbnail.
+- `admin.coupons.functions.ts`: CRUD `coupons`.
+- `admin.customers.functions.ts`: `listCustomers` (join orders aggregate), `getCustomerDetail`, `setUserRole` (grant/revoke admin — hanya admin lain yang boleh).
+- `admin.reviews.functions.ts`: `listReviews`, `deleteReview`.
+- `admin.metrics.functions.ts`: `getDashboardMetrics` (revenue 7/30/90 hari, AOV, jumlah order per status, top produk, low-stock alert, new customers).
+- `admin.settings.functions.ts`: get/set konfigurasi toko (disimpan di tabel baru `store_settings` single-row, atau `activity_logs`-style key/value).
 
 ## Komponen baru
 
-`CartDrawer`, `CartLineItem`, `QuantityStepper`, `CheckoutStepper`, `AddressPicker`, `ShippingPicker`, `VoucherInput`, `OrderSummary`, `BankInstructionCard`, `CountdownTimer`, `OrderStatusTimeline`, `OrderCard`, `ProofUploader`, `ReviewModal`, `WishlistButton`, `NotificationBell`, `NotificationItem`, `EmptyCart`.
+`AdminLayout`, `AdminSidebar`, `AdminHeader`, `StatCard`, `MetricChart` (recharts), `OrdersTable`, `OrderStatusBadge`, `PaymentVerificationCard` (preview bukti + approve/reject), `ShipmentForm` (kurir + resi), `ProductForm` (multi-image dropzone, tasting notes editor, sliders aroma/body/acidity), `BlogEditor` (textarea markdown + preview), `CouponForm`, `DataTable` (reusable dengan sort/pagination/filter), `ConfirmDialog`, `RoleBadge`, `LowStockAlert`.
 
-## Server functions (`src/lib/*.functions.ts`)
+## Database (migrasi tambahan)
 
-Semua `requireSupabaseAuth`, hitung ulang di server, return DTO plain:
-- `cart.functions.ts`: `getMyCart`, `addToCart`, `updateCartItem`, `removeCartItem`, `clearCart`.
-- `checkout.functions.ts`: `previewCheckout` (validasi voucher + total), `createOrder` (transaksi penuh).
-- `orders.functions.ts`: `getMyOrders`, `getMyOrderByNumber`, `cancelOrder`, `markOrderReceived`.
-- `payments.functions.ts`: `submitPaymentProof` (validasi MIME + ukuran, simpan path).
-- `wishlist.functions.ts`: `toggleWishlist`.
-- `reviews.functions.ts`: `submitReview`.
-- `notifications.functions.ts`: `listMyNotifications`, `markRead`, `markAllRead`, `unreadCount`.
+- Tabel baru `public.store_settings` (single row, RLS admin-only): rekening bank list (jsonb), info toko, default origin tujuan ongkir, threshold low-stock.
+- RLS policies tambahan: admin bisa SELECT/UPDATE semua `orders`, `payments`, `shipments`, `products`, `blogs`, `coupons`, `reviews`, `profiles`, `user_roles` via `has_role(auth.uid(),'admin')`. Pakai pola SECURITY DEFINER yang sudah ada.
+- RPC baru:
+  - `admin_verify_payment(p_payment_id, p_approve bool, p_note)` — update `payments.status`, kalau approve → `orders.status='diproses'`, kirim notif user.
+  - `admin_set_shipment(p_order_id, p_courier, p_tracking)` — update `shipments`, `orders.status='dikirim'`, notif.
+  - `admin_refund_order(p_order_id, p_reason)` — restore stok, status refund, notif.
+  - `admin_set_user_role(p_user_id, p_role, p_grant bool)` — guard: caller harus admin.
+- Storage policies: admin write ke `product-images`, `blog-images`. Public read tetap via signed URL atau bucket public (untuk product/blog — pertimbangkan ubah bucket jadi public). Akan dikonfirmasi: **product-images & blog-images saya jadikan public bucket** supaya gambar muncul tanpa signed URL ribet di customer side.
+- Index: `orders(status, created_at)`, `payments(status)`, `products(is_published, kind)`.
 
-`attachSupabaseAuth` sudah terdaftar di `src/start.ts` dari Stage 0 — tinggal pakai.
+## Dashboard `/admin`
 
-## Data & RLS
+Kartu metrik: revenue hari ini / 7d / 30d, jumlah order per status (badge), pembayaran menunggu verifikasi (CTA), low-stock products, new customers 7d. Grafik garis revenue 30d, bar top 5 produk, list 10 pesanan terbaru.
 
-Tabel sudah ada (Stage 0). Migrasi tambahan kecil:
-- Index pada `cart_items(cart_id)`, `order_items(order_id)`, `notifications(user_id, is_read)`.
-- Helper SQL function `public.compute_order_totals(p_user uuid, p_coupon text, p_shipping_cost int)` (SECURITY DEFINER) untuk hitung subtotal + diskon + ongkir konsisten.
-- Storage policy `payment-proofs`: user hanya bisa upload/baca file di prefix `${auth.uid()}/...`.
-- Storage policy `review-photos`: user bisa upload di prefix `${auth.uid()}/...`, baca publik (signed URL via server fn untuk tampilan).
-- Tidak ada perubahan skema tabel.
+## UX & quality
 
-## UX & validation
+- Tabel pakai TanStack Query + pagination server-side (limit/offset).
+- Form Zod + react-hook-form, optimistic update + rollback on error.
+- Toast Bahasa Indonesia konsisten dengan customer side.
+- Loading skeleton di semua tabel & dashboard.
+- Empty state per halaman.
+- Konfirmasi destructive (hapus produk, refund, revoke admin).
+- Mobile-responsive: sidebar collapse jadi sheet, tabel scroll horizontal.
+- Audit: setiap aksi admin (verify payment, set resi, refund, role change) insert ke `activity_logs`.
 
-- Semua form Zod (alamat, voucher, qty, upload).
-- Toast Bahasa Indonesia hangat ("Pesananmu sudah masuk, tinggal transfer ya ☕").
-- Loading skeleton di cart, checkout summary, order detail.
-- Empty states: keranjang kosong, belum ada pesanan, belum ada notifikasi.
-- Error states: stok habis saat checkout, voucher invalid, upload gagal, total mismatch.
-- Optimistic update untuk qty cart & toggle wishlist.
-- Mobile-first responsive: checkout 1 kolom di mobile, 2 kolom (form + sticky summary) di desktop.
+## Header customer-side
 
-## Routing baru
-
-```
-/keranjang                                 (sudah ada → diisi)
-/checkout
-/checkout/sukses/$orderNumber
-/_authenticated/akun/pesanan               (diisi)
-/_authenticated/akun/pesanan/$orderNumber
-/_authenticated/akun/pesanan/$orderNumber/bayar
-/_authenticated/akun/notifikasi
-```
+Tambah link "Admin" di dropdown akun **hanya jika** user punya role admin (cek via `has_role` query). Tidak ubah landing.
 
 ## Yang TIDAK dikerjakan stage ini
 
-- Admin verifikasi pembayaran, input resi, ubah status → **Stage 3**.
-- Email/WA notifikasi keluar → cukup in-app notifikasi dulu.
-- Refund flow lengkap → status `refund` ada, UI hanya read-only.
-- Subscription, loyalty redeem, forum, recipe, event → **Stage 4**.
+- Loyalty redeem & subscription management → Stage 4.
+- Forum moderation, recipe, event CMS → Stage 4.
+- Email/WA outbound (mis. notif resi via WA) → Stage 4 / integrasi.
+- Export CSV pesanan → opsional, bisa ditambah jika diminta.
+- Multi-admin permission granular (semua admin = full akses di stage ini).
 
-## Catatan teknis
+## Catatan eksekusi
 
-- Ongkir manual: user input estimasi, admin bisa adjust di Stage 3. Simpan `shipping_cost_estimated` & `shipping_cost_final` di `orders` (pakai kolom yang sudah ada).
-- Nomor unik transfer: simpan `unique_amount_suffix` (0-999) di `orders` agar verifikasi admin gampang.
-- Stok: decrement saat `createOrder`, restore saat `cancelOrder`.
-- Custom coffee item: `product_id` null, `meta jsonb` simpan konfigurasi, harga dihitung server-side dari formula (base + roast premium + grind).
+- Saat eksekusi nanti, saya akan minta **email user yang mau dijadikan admin pertama** untuk seed role. Atau buat halaman one-time `/admin/setup` yang grant admin ke caller bila belum ada admin sama sekali.
+- Bucket `product-images` & `blog-images` akan saya ubah jadi **public** (read) supaya `<img>` di customer langsung jalan. Upload tetap admin-only via RLS.
 
-Balas **"lanjut"** untuk mulai eksekusi Stage 2, atau beri tahu jika ada bagian yang ingin dipangkas / diprioritaskan (mis. skip notifikasi dulu, atau skip review).
+Balas **"lanjut"** untuk mulai eksekusi Stage 3, atau beri tahu jika ada bagian yang ingin dipangkas (mis. skip metrik/grafik dulu, atau skip moderasi review).
