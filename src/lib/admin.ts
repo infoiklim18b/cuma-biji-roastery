@@ -87,7 +87,7 @@ export const adminPaymentsQueueQuery = () =>
         .from("payments")
         .select("*, orders(order_number, user_id, total, status)")
         .not("proof_url", "is", null)
-        .in("status", ["menunggu", "menunggu_verifikasi"])
+        .eq("status", "menunggu")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
