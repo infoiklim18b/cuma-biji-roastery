@@ -1096,6 +1096,42 @@ export type Database = {
           },
         ]
       }
+      store_settings: {
+        Row: {
+          bank_accounts: Json
+          id: boolean
+          low_stock_threshold: number
+          shipping_origin_city: string | null
+          store_address: string | null
+          store_email: string | null
+          store_name: string
+          store_phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          bank_accounts?: Json
+          id?: boolean
+          low_stock_threshold?: number
+          shipping_origin_city?: string | null
+          store_address?: string | null
+          store_email?: string | null
+          store_name?: string
+          store_phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bank_accounts?: Json
+          id?: boolean
+          low_stock_threshold?: number
+          shipping_origin_city?: string | null
+          store_address?: string | null
+          store_email?: string | null
+          store_name?: string
+          store_phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       subscription_deliveries: {
         Row: {
           created_at: string
@@ -1240,6 +1276,193 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_shipping: {
+        Args: { p_new_shipping: number; p_order_id: string }
+        Returns: {
+          bank: Database["public"]["Enums"]["bank"]
+          cancel_reason: string | null
+          completed_at: string | null
+          courier: Database["public"]["Enums"]["courier"]
+          created_at: string
+          discount: number
+          id: string
+          note: string | null
+          order_number: string
+          paid_at: string | null
+          recipient_city: string
+          recipient_name: string
+          recipient_phone: string
+          recipient_postal_code: string
+          recipient_province: string
+          recipient_street: string
+          shipped_at: string | null
+          shipping_cost: number
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+          voucher_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_dashboard_metrics: { Args: never; Returns: Json }
+      admin_refund_order: {
+        Args: { p_order_id: string; p_reason?: string }
+        Returns: {
+          bank: Database["public"]["Enums"]["bank"]
+          cancel_reason: string | null
+          completed_at: string | null
+          courier: Database["public"]["Enums"]["courier"]
+          created_at: string
+          discount: number
+          id: string
+          note: string | null
+          order_number: string
+          paid_at: string | null
+          recipient_city: string
+          recipient_name: string
+          recipient_phone: string
+          recipient_postal_code: string
+          recipient_province: string
+          recipient_street: string
+          shipped_at: string | null
+          shipping_cost: number
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+          voucher_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_set_order_status: {
+        Args: {
+          p_note?: string
+          p_order_id: string
+          p_status: Database["public"]["Enums"]["order_status"]
+        }
+        Returns: {
+          bank: Database["public"]["Enums"]["bank"]
+          cancel_reason: string | null
+          completed_at: string | null
+          courier: Database["public"]["Enums"]["courier"]
+          created_at: string
+          discount: number
+          id: string
+          note: string | null
+          order_number: string
+          paid_at: string | null
+          recipient_city: string
+          recipient_name: string
+          recipient_phone: string
+          recipient_postal_code: string
+          recipient_province: string
+          recipient_street: string
+          shipped_at: string | null
+          shipping_cost: number
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+          voucher_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_set_shipment: {
+        Args: {
+          p_courier: Database["public"]["Enums"]["courier"]
+          p_order_id: string
+          p_tracking: string
+        }
+        Returns: {
+          bank: Database["public"]["Enums"]["bank"]
+          cancel_reason: string | null
+          completed_at: string | null
+          courier: Database["public"]["Enums"]["courier"]
+          created_at: string
+          discount: number
+          id: string
+          note: string | null
+          order_number: string
+          paid_at: string | null
+          recipient_city: string
+          recipient_name: string
+          recipient_phone: string
+          recipient_postal_code: string
+          recipient_province: string
+          recipient_street: string
+          shipped_at: string | null
+          shipping_cost: number
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          total: number
+          tracking_number: string | null
+          updated_at: string
+          user_id: string
+          voucher_code: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_set_user_role: {
+        Args: {
+          p_grant: boolean
+          p_role: Database["public"]["Enums"]["app_role"]
+          p_user_id: string
+        }
+        Returns: boolean
+      }
+      admin_verify_payment: {
+        Args: { p_approve: boolean; p_note?: string; p_payment_id: string }
+        Returns: {
+          amount: number
+          bank: Database["public"]["Enums"]["bank"]
+          created_at: string
+          id: string
+          note: string | null
+          order_id: string
+          proof_url: string | null
+          reject_reason: string | null
+          sender_name: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      bootstrap_first_admin: { Args: never; Returns: boolean }
       cancel_my_order: {
         Args: { p_order_id: string; p_reason?: string }
         Returns: {
