@@ -25,11 +25,11 @@ function EditProduct() {
     return <AdminLayout title="Memuat…"><div /></AdminLayout>;
   }
 
-  async function save(values: Record<string, unknown>) {
+  async function save(values: Record<string, unknown>): Promise<void> {
     setSaving(true);
-    const { error } = await supabase.from("products").update(values).eq("id", id);
+    const { error } = await supabase.from("products").update(values as never).eq("id", id);
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Produk tersimpan");
   }
 

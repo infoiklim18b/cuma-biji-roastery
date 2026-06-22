@@ -40,7 +40,10 @@ import { Route as AuthenticatedAkunNotifikasiRouteImport } from './routes/_authe
 import { Route as AuthenticatedAkunAlamatRouteImport } from './routes/_authenticated/akun.alamat'
 import { Route as AuthenticatedAdminPembayaranRouteImport } from './routes/_authenticated/admin/pembayaran'
 import { Route as AuthenticatedAkunPesananIndexRouteImport } from './routes/_authenticated/akun.pesanan.index'
+import { Route as AuthenticatedAdminProdukIndexRouteImport } from './routes/_authenticated/admin/produk.index'
 import { Route as AuthenticatedAdminPesananIndexRouteImport } from './routes/_authenticated/admin/pesanan.index'
+import { Route as AuthenticatedAdminProdukBaruRouteImport } from './routes/_authenticated/admin/produk.baru'
+import { Route as AuthenticatedAdminProdukIdRouteImport } from './routes/_authenticated/admin/produk.$id'
 import { Route as AuthenticatedAdminPesananOrderNumberRouteImport } from './routes/_authenticated/admin/pesanan.$orderNumber'
 import { Route as AuthenticatedAkunPesananOrderNumberIndexRouteImport } from './routes/_authenticated/akun.pesanan.$orderNumber.index'
 import { Route as AuthenticatedAkunPesananOrderNumberBayarRouteImport } from './routes/_authenticated/akun.pesanan.$orderNumber.bayar'
@@ -204,10 +207,28 @@ const AuthenticatedAkunPesananIndexRoute =
     path: '/pesanan/',
     getParentRoute: () => AuthenticatedAkunRoute,
   } as any)
+const AuthenticatedAdminProdukIndexRoute =
+  AuthenticatedAdminProdukIndexRouteImport.update({
+    id: '/produk/',
+    path: '/produk/',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminPesananIndexRoute =
   AuthenticatedAdminPesananIndexRouteImport.update({
     id: '/pesanan/',
     path: '/pesanan/',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminProdukBaruRoute =
+  AuthenticatedAdminProdukBaruRouteImport.update({
+    id: '/produk/baru',
+    path: '/produk/baru',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminProdukIdRoute =
+  AuthenticatedAdminProdukIdRouteImport.update({
+    id: '/produk/$id',
+    path: '/produk/$id',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminPesananOrderNumberRoute =
@@ -260,7 +281,10 @@ export interface FileRoutesByFullPath {
   '/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/pesanan/$orderNumber': typeof AuthenticatedAdminPesananOrderNumberRoute
+  '/admin/produk/$id': typeof AuthenticatedAdminProdukIdRoute
+  '/admin/produk/baru': typeof AuthenticatedAdminProdukBaruRoute
   '/admin/pesanan/': typeof AuthenticatedAdminPesananIndexRoute
+  '/admin/produk/': typeof AuthenticatedAdminProdukIndexRoute
   '/akun/pesanan/': typeof AuthenticatedAkunPesananIndexRoute
   '/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
   '/akun/pesanan/$orderNumber/': typeof AuthenticatedAkunPesananOrderNumberIndexRoute
@@ -295,7 +319,10 @@ export interface FileRoutesByTo {
   '/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/pesanan/$orderNumber': typeof AuthenticatedAdminPesananOrderNumberRoute
+  '/admin/produk/$id': typeof AuthenticatedAdminProdukIdRoute
+  '/admin/produk/baru': typeof AuthenticatedAdminProdukBaruRoute
   '/admin/pesanan': typeof AuthenticatedAdminPesananIndexRoute
+  '/admin/produk': typeof AuthenticatedAdminProdukIndexRoute
   '/akun/pesanan': typeof AuthenticatedAkunPesananIndexRoute
   '/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
   '/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberIndexRoute
@@ -333,7 +360,10 @@ export interface FileRoutesById {
   '/_authenticated/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/pesanan/$orderNumber': typeof AuthenticatedAdminPesananOrderNumberRoute
+  '/_authenticated/admin/produk/$id': typeof AuthenticatedAdminProdukIdRoute
+  '/_authenticated/admin/produk/baru': typeof AuthenticatedAdminProdukBaruRoute
   '/_authenticated/admin/pesanan/': typeof AuthenticatedAdminPesananIndexRoute
+  '/_authenticated/admin/produk/': typeof AuthenticatedAdminProdukIndexRoute
   '/_authenticated/akun/pesanan/': typeof AuthenticatedAkunPesananIndexRoute
   '/_authenticated/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
   '/_authenticated/akun/pesanan/$orderNumber/': typeof AuthenticatedAkunPesananOrderNumberIndexRoute
@@ -371,7 +401,10 @@ export interface FileRouteTypes {
     | '/pesanan-sukses/$orderNumber'
     | '/admin/'
     | '/admin/pesanan/$orderNumber'
+    | '/admin/produk/$id'
+    | '/admin/produk/baru'
     | '/admin/pesanan/'
+    | '/admin/produk/'
     | '/akun/pesanan/'
     | '/akun/pesanan/$orderNumber/bayar'
     | '/akun/pesanan/$orderNumber/'
@@ -406,7 +439,10 @@ export interface FileRouteTypes {
     | '/pesanan-sukses/$orderNumber'
     | '/admin'
     | '/admin/pesanan/$orderNumber'
+    | '/admin/produk/$id'
+    | '/admin/produk/baru'
     | '/admin/pesanan'
+    | '/admin/produk'
     | '/akun/pesanan'
     | '/akun/pesanan/$orderNumber/bayar'
     | '/akun/pesanan/$orderNumber'
@@ -443,7 +479,10 @@ export interface FileRouteTypes {
     | '/_authenticated/pesanan-sukses/$orderNumber'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/pesanan/$orderNumber'
+    | '/_authenticated/admin/produk/$id'
+    | '/_authenticated/admin/produk/baru'
     | '/_authenticated/admin/pesanan/'
+    | '/_authenticated/admin/produk/'
     | '/_authenticated/akun/pesanan/'
     | '/_authenticated/akun/pesanan/$orderNumber/bayar'
     | '/_authenticated/akun/pesanan/$orderNumber/'
@@ -688,11 +727,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAkunPesananIndexRouteImport
       parentRoute: typeof AuthenticatedAkunRoute
     }
+    '/_authenticated/admin/produk/': {
+      id: '/_authenticated/admin/produk/'
+      path: '/produk'
+      fullPath: '/admin/produk/'
+      preLoaderRoute: typeof AuthenticatedAdminProdukIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/pesanan/': {
       id: '/_authenticated/admin/pesanan/'
       path: '/pesanan'
       fullPath: '/admin/pesanan/'
       preLoaderRoute: typeof AuthenticatedAdminPesananIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/produk/baru': {
+      id: '/_authenticated/admin/produk/baru'
+      path: '/produk/baru'
+      fullPath: '/admin/produk/baru'
+      preLoaderRoute: typeof AuthenticatedAdminProdukBaruRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/produk/$id': {
+      id: '/_authenticated/admin/produk/$id'
+      path: '/produk/$id'
+      fullPath: '/admin/produk/$id'
+      preLoaderRoute: typeof AuthenticatedAdminProdukIdRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/pesanan/$orderNumber': {
@@ -723,7 +783,10 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminPembayaranRoute: typeof AuthenticatedAdminPembayaranRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminPesananOrderNumberRoute: typeof AuthenticatedAdminPesananOrderNumberRoute
+  AuthenticatedAdminProdukIdRoute: typeof AuthenticatedAdminProdukIdRoute
+  AuthenticatedAdminProdukBaruRoute: typeof AuthenticatedAdminProdukBaruRoute
   AuthenticatedAdminPesananIndexRoute: typeof AuthenticatedAdminPesananIndexRoute
+  AuthenticatedAdminProdukIndexRoute: typeof AuthenticatedAdminProdukIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
@@ -732,7 +795,10 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
     AuthenticatedAdminPesananOrderNumberRoute:
       AuthenticatedAdminPesananOrderNumberRoute,
+    AuthenticatedAdminProdukIdRoute: AuthenticatedAdminProdukIdRoute,
+    AuthenticatedAdminProdukBaruRoute: AuthenticatedAdminProdukBaruRoute,
     AuthenticatedAdminPesananIndexRoute: AuthenticatedAdminPesananIndexRoute,
+    AuthenticatedAdminProdukIndexRoute: AuthenticatedAdminProdukIndexRoute,
   }
 
 const AuthenticatedAdminRouteRouteWithChildren =

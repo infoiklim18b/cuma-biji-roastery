@@ -19,7 +19,7 @@ function NewProduct() {
   const { data: categories } = useQuery(adminCategoriesQuery());
   const [saving, setSaving] = useState(false);
 
-  async function save(values: Record<string, unknown>) {
+  async function save(values: Record<string, unknown>): Promise<void> {
     setSaving(true);
     const { data, error } = await supabase
       .from("products")
@@ -27,7 +27,7 @@ function NewProduct() {
       .select("id")
       .single();
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Produk dibuat");
     navigate({ to: "/admin/produk/$id", params: { id: data!.id } });
   }
