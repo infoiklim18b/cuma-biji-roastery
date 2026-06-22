@@ -31,13 +31,17 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AuthenticatedAkunRouteImport } from './routes/_authenticated/akun'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedPesananSuksesOrderNumberRouteImport } from './routes/_authenticated/pesanan-sukses.$orderNumber'
 import { Route as AuthenticatedAkunWishlistRouteImport } from './routes/_authenticated/akun.wishlist'
 import { Route as AuthenticatedAkunReviewRouteImport } from './routes/_authenticated/akun.review'
 import { Route as AuthenticatedAkunProfilRouteImport } from './routes/_authenticated/akun.profil'
 import { Route as AuthenticatedAkunNotifikasiRouteImport } from './routes/_authenticated/akun.notifikasi'
 import { Route as AuthenticatedAkunAlamatRouteImport } from './routes/_authenticated/akun.alamat'
+import { Route as AuthenticatedAdminPembayaranRouteImport } from './routes/_authenticated/admin/pembayaran'
 import { Route as AuthenticatedAkunPesananIndexRouteImport } from './routes/_authenticated/akun.pesanan.index'
+import { Route as AuthenticatedAdminPesananIndexRouteImport } from './routes/_authenticated/admin/pesanan.index'
+import { Route as AuthenticatedAdminPesananOrderNumberRouteImport } from './routes/_authenticated/admin/pesanan.$orderNumber'
 import { Route as AuthenticatedAkunPesananOrderNumberIndexRouteImport } from './routes/_authenticated/akun.pesanan.$orderNumber.index'
 import { Route as AuthenticatedAkunPesananOrderNumberBayarRouteImport } from './routes/_authenticated/akun.pesanan.$orderNumber.bayar'
 
@@ -150,6 +154,11 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 const AuthenticatedPesananSuksesOrderNumberRoute =
   AuthenticatedPesananSuksesOrderNumberRouteImport.update({
     id: '/pesanan-sukses/$orderNumber',
@@ -183,11 +192,29 @@ const AuthenticatedAkunAlamatRoute = AuthenticatedAkunAlamatRouteImport.update({
   path: '/alamat',
   getParentRoute: () => AuthenticatedAkunRoute,
 } as any)
+const AuthenticatedAdminPembayaranRoute =
+  AuthenticatedAdminPembayaranRouteImport.update({
+    id: '/pembayaran',
+    path: '/pembayaran',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAkunPesananIndexRoute =
   AuthenticatedAkunPesananIndexRouteImport.update({
     id: '/pesanan/',
     path: '/pesanan/',
     getParentRoute: () => AuthenticatedAkunRoute,
+  } as any)
+const AuthenticatedAdminPesananIndexRoute =
+  AuthenticatedAdminPesananIndexRouteImport.update({
+    id: '/pesanan/',
+    path: '/pesanan/',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminPesananOrderNumberRoute =
+  AuthenticatedAdminPesananOrderNumberRouteImport.update({
+    id: '/pesanan/$orderNumber',
+    path: '/pesanan/$orderNumber',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAkunPesananOrderNumberIndexRoute =
   AuthenticatedAkunPesananOrderNumberIndexRouteImport.update({
@@ -218,18 +245,22 @@ export interface FileRoutesByFullPath {
   '/single-origin': typeof SingleOriginRouteWithChildren
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/akun': typeof AuthenticatedAkunRouteWithChildren
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
+  '/admin/pembayaran': typeof AuthenticatedAdminPembayaranRoute
   '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
   '/akun/notifikasi': typeof AuthenticatedAkunNotifikasiRoute
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
   '/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/pesanan/$orderNumber': typeof AuthenticatedAdminPesananOrderNumberRoute
+  '/admin/pesanan/': typeof AuthenticatedAdminPesananIndexRoute
   '/akun/pesanan/': typeof AuthenticatedAkunPesananIndexRoute
   '/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
   '/akun/pesanan/$orderNumber/': typeof AuthenticatedAkunPesananOrderNumberIndexRoute
@@ -250,18 +281,21 @@ export interface FileRoutesByTo {
   '/single-origin': typeof SingleOriginRouteWithChildren
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
   '/akun': typeof AuthenticatedAkunRouteWithChildren
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
+  '/admin/pembayaran': typeof AuthenticatedAdminPembayaranRoute
   '/akun/alamat': typeof AuthenticatedAkunAlamatRoute
   '/akun/notifikasi': typeof AuthenticatedAkunNotifikasiRoute
   '/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/akun/review': typeof AuthenticatedAkunReviewRoute
   '/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
   '/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/pesanan/$orderNumber': typeof AuthenticatedAdminPesananOrderNumberRoute
+  '/admin/pesanan': typeof AuthenticatedAdminPesananIndexRoute
   '/akun/pesanan': typeof AuthenticatedAkunPesananIndexRoute
   '/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
   '/akun/pesanan/$orderNumber': typeof AuthenticatedAkunPesananOrderNumberIndexRoute
@@ -284,18 +318,22 @@ export interface FileRoutesById {
   '/single-origin': typeof SingleOriginRouteWithChildren
   '/syarat': typeof SyaratRoute
   '/tentang': typeof TentangRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRouteRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/akun': typeof AuthenticatedAkunRouteWithChildren
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/single-origin/$slug': typeof SingleOriginSlugRoute
+  '/_authenticated/admin/pembayaran': typeof AuthenticatedAdminPembayaranRoute
   '/_authenticated/akun/alamat': typeof AuthenticatedAkunAlamatRoute
   '/_authenticated/akun/notifikasi': typeof AuthenticatedAkunNotifikasiRoute
   '/_authenticated/akun/profil': typeof AuthenticatedAkunProfilRoute
   '/_authenticated/akun/review': typeof AuthenticatedAkunReviewRoute
   '/_authenticated/akun/wishlist': typeof AuthenticatedAkunWishlistRoute
   '/_authenticated/pesanan-sukses/$orderNumber': typeof AuthenticatedPesananSuksesOrderNumberRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/pesanan/$orderNumber': typeof AuthenticatedAdminPesananOrderNumberRoute
+  '/_authenticated/admin/pesanan/': typeof AuthenticatedAdminPesananIndexRoute
   '/_authenticated/akun/pesanan/': typeof AuthenticatedAkunPesananIndexRoute
   '/_authenticated/akun/pesanan/$orderNumber/bayar': typeof AuthenticatedAkunPesananOrderNumberBayarRoute
   '/_authenticated/akun/pesanan/$orderNumber/': typeof AuthenticatedAkunPesananOrderNumberIndexRoute
@@ -324,12 +362,16 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/produk/$slug'
     | '/single-origin/$slug'
+    | '/admin/pembayaran'
     | '/akun/alamat'
     | '/akun/notifikasi'
     | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
     | '/pesanan-sukses/$orderNumber'
+    | '/admin/'
+    | '/admin/pesanan/$orderNumber'
+    | '/admin/pesanan/'
     | '/akun/pesanan/'
     | '/akun/pesanan/$orderNumber/bayar'
     | '/akun/pesanan/$orderNumber/'
@@ -350,18 +392,21 @@ export interface FileRouteTypes {
     | '/single-origin'
     | '/syarat'
     | '/tentang'
-    | '/admin'
     | '/akun'
     | '/checkout'
     | '/blog/$slug'
     | '/produk/$slug'
     | '/single-origin/$slug'
+    | '/admin/pembayaran'
     | '/akun/alamat'
     | '/akun/notifikasi'
     | '/akun/profil'
     | '/akun/review'
     | '/akun/wishlist'
     | '/pesanan-sukses/$orderNumber'
+    | '/admin'
+    | '/admin/pesanan/$orderNumber'
+    | '/admin/pesanan'
     | '/akun/pesanan'
     | '/akun/pesanan/$orderNumber/bayar'
     | '/akun/pesanan/$orderNumber'
@@ -389,12 +434,16 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/produk/$slug'
     | '/single-origin/$slug'
+    | '/_authenticated/admin/pembayaran'
     | '/_authenticated/akun/alamat'
     | '/_authenticated/akun/notifikasi'
     | '/_authenticated/akun/profil'
     | '/_authenticated/akun/review'
     | '/_authenticated/akun/wishlist'
     | '/_authenticated/pesanan-sukses/$orderNumber'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/pesanan/$orderNumber'
+    | '/_authenticated/admin/pesanan/'
     | '/_authenticated/akun/pesanan/'
     | '/_authenticated/akun/pesanan/$orderNumber/bayar'
     | '/_authenticated/akun/pesanan/$orderNumber/'
@@ -576,6 +625,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/pesanan-sukses/$orderNumber': {
       id: '/_authenticated/pesanan-sukses/$orderNumber'
       path: '/pesanan-sukses/$orderNumber'
@@ -618,12 +674,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAkunAlamatRouteImport
       parentRoute: typeof AuthenticatedAkunRoute
     }
+    '/_authenticated/admin/pembayaran': {
+      id: '/_authenticated/admin/pembayaran'
+      path: '/pembayaran'
+      fullPath: '/admin/pembayaran'
+      preLoaderRoute: typeof AuthenticatedAdminPembayaranRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/akun/pesanan/': {
       id: '/_authenticated/akun/pesanan/'
       path: '/pesanan'
       fullPath: '/akun/pesanan/'
       preLoaderRoute: typeof AuthenticatedAkunPesananIndexRouteImport
       parentRoute: typeof AuthenticatedAkunRoute
+    }
+    '/_authenticated/admin/pesanan/': {
+      id: '/_authenticated/admin/pesanan/'
+      path: '/pesanan'
+      fullPath: '/admin/pesanan/'
+      preLoaderRoute: typeof AuthenticatedAdminPesananIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/pesanan/$orderNumber': {
+      id: '/_authenticated/admin/pesanan/$orderNumber'
+      path: '/pesanan/$orderNumber'
+      fullPath: '/admin/pesanan/$orderNumber'
+      preLoaderRoute: typeof AuthenticatedAdminPesananOrderNumberRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/akun/pesanan/$orderNumber/': {
       id: '/_authenticated/akun/pesanan/$orderNumber/'
@@ -641,6 +718,27 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminPembayaranRoute: typeof AuthenticatedAdminPembayaranRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminPesananOrderNumberRoute: typeof AuthenticatedAdminPesananOrderNumberRoute
+  AuthenticatedAdminPesananIndexRoute: typeof AuthenticatedAdminPesananIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminPembayaranRoute: AuthenticatedAdminPembayaranRoute,
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+    AuthenticatedAdminPesananOrderNumberRoute:
+      AuthenticatedAdminPesananOrderNumberRoute,
+    AuthenticatedAdminPesananIndexRoute: AuthenticatedAdminPesananIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
 
 interface AuthenticatedAkunRouteChildren {
   AuthenticatedAkunAlamatRoute: typeof AuthenticatedAkunAlamatRoute
@@ -670,14 +768,14 @@ const AuthenticatedAkunRouteWithChildren =
   AuthenticatedAkunRoute._addFileChildren(AuthenticatedAkunRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRoute
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedAkunRoute: typeof AuthenticatedAkunRouteWithChildren
   AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
   AuthenticatedPesananSuksesOrderNumberRoute: typeof AuthenticatedPesananSuksesOrderNumberRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRoute,
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedAkunRoute: AuthenticatedAkunRouteWithChildren,
   AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
   AuthenticatedPesananSuksesOrderNumberRoute:
