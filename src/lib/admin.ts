@@ -248,7 +248,7 @@ export async function verifyPayment(paymentId: string, approve: boolean, note?: 
   const { data, error } = await supabase.rpc("admin_verify_payment", {
     p_payment_id: paymentId,
     p_approve: approve,
-    p_note: note ?? null,
+    p_note: note,
   });
   if (error) throw error;
   return data;
@@ -268,7 +268,7 @@ export async function setOrderStatus(orderId: string, status: OrderStatus, note?
   const { data, error } = await supabase.rpc("admin_set_order_status", {
     p_order_id: orderId,
     p_status: status,
-    p_note: note ?? null,
+    p_note: note,
   });
   if (error) throw error;
   return data;
@@ -277,7 +277,7 @@ export async function setOrderStatus(orderId: string, status: OrderStatus, note?
 export async function refundOrder(orderId: string, reason?: string) {
   const { data, error } = await supabase.rpc("admin_refund_order", {
     p_order_id: orderId,
-    p_reason: reason ?? null,
+    p_reason: reason,
   });
   if (error) throw error;
   return data;
