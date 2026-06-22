@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowRight, Shield } from "lucide-react";
+import { toast } from "sonner";
 import { AccountLayout } from "@/components/cuma/AccountLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { profileQuery, wishlistQuery } from "@/lib/queries";
+import { isAdminQuery, bootstrapFirstAdmin } from "@/lib/admin";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/akun")({
   head: () => ({ meta: [{ title: "Akun saya — Cuma Biji" }] }),
@@ -12,15 +15,43 @@ export const Route = createFileRoute("/_authenticated/akun")({
 });
 
 function AccountDashboard() {
+  const qc = useQueryClient();
   const [userId, setUserId] = useState("");
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? ""));
   }, []);
   const { data: profile } = useQuery({ ...profileQuery(userId), enabled: !!userId });
   const { data: wishlist } = useQuery({ ...wishlistQuery(userId), enabled: !!userId });
+  const { data: isAdmin } = useQuery({ ...isAdminQuery(userId), enabled: !!userId });
+
+  async function becomeAdmin() {
+    try {
+      await bootstrapFirstAdmin();
+      toast.success("Selamat, kamu kini admin pertama ☕");
+      qc.invalidateQueries({ queryKey: ["is-admin"] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  }
 
   return (
     <AccountLayout title="Dashboard">
+      {!isAdmin && (
+        <div className="rounded-2xl border border-dashed border-[color:var(--coffee)]/40 bg-[color:var(--secondary)]/30 p-4 mb-4 flex items-center justify-between gap-4">
+          <p className="text-xs text-[color:var(--muted-foreground)]">
+            Belum ada admin? Klaim akses admin pertama untuk mengelola toko.
+          </p>
+          <Button size="sm" variant="outline" onClick={becomeAdmin}>
+            <Shield className="h-3.5 w-3.5 mr-1" /> Jadi admin pertama
+          </Button>
+        </div>
+      )}
+      {isAdmin && (
+        <div className="rounded-2xl border border-[color:var(--coffee)] bg-[color:var(--secondary)]/40 p-4 mb-4 flex items-center justify-between gap-4">
+          <p className="text-xs text-[color:var(--coffee)]"><Shield className="h-3.5 w-3.5 inline mr-1" /> Kamu admin Cuma Biji</p>
+          <Link to="/admin" className="text-xs underline text-[color:var(--coffee)]">Buka admin panel →</Link>
+        </div>
+      )}
       <div className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] p-8">
         <p className="eyebrow">Selamat datang</p>
         <h2 className="mt-2 font-display text-2xl text-[color:var(--coffee)]">
