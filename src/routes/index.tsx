@@ -4,6 +4,9 @@ import { PublicLayout } from "@/components/cuma/PublicLayout";
 import { BeanSilhouette } from "@/components/cuma/BeanMark";
 import heroImg from "@/assets/hero-coffee.jpg";
 import beansCluster from "@/assets/beans-cluster.png";
+import blogV60 from "@/assets/blog/v60-brew.jpg";
+import blogGayo from "@/assets/blog/gayo-cherries.jpg";
+import blogRoast from "@/assets/blog/roast-levels.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -151,12 +154,21 @@ function Home() {
         </div>
         <div className="grid gap-8 md:grid-cols-3">
           {[
-            ["/blog/cara-seduh-v60", "Panduan Seduh", "Cara Seduh V60 untuk Pemula"],
-            ["/blog/mengenal-kopi-gayo", "Mengenal Origin", "Mengenal Kopi Gayo, Permata Aceh"],
-            ["/blog/memilih-roast-level", "Roasting Guide", "Memilih Roast Level yang Pas"],
-          ].map(([href, cat, title]) => (
+            ["/blog/cara-seduh-v60", "Panduan Seduh", "Cara Seduh V60 untuk Pemula", blogV60],
+            ["/blog/mengenal-kopi-gayo", "Mengenal Origin", "Mengenal Kopi Gayo, Permata Aceh", blogGayo],
+            ["/blog/memilih-roast-level", "Roasting Guide", "Memilih Roast Level yang Pas", blogRoast],
+          ].map(([href, cat, title, img]) => (
             <Link key={href} to={href} className="group">
-              <div className="aspect-[4/3] rounded-xl bg-[color:var(--cream)] mb-4" />
+              <div className="aspect-[4/3] overflow-hidden rounded-xl bg-[color:var(--cream)] mb-4">
+                <img
+                  src={img}
+                  alt={title}
+                  width={1024}
+                  height={768}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+              </div>
               <p className="eyebrow">{cat}</p>
               <p className="mt-2 font-display text-xl text-[color:var(--coffee)] group-hover:underline">{title}</p>
             </Link>
